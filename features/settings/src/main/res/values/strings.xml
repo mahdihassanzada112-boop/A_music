@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_follow_system">System default</string>
+    <string name="settings_light">Light</string>
+    <string name="settings_dark">Dark</string>
+</resources>

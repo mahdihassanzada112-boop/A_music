@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">تنظیمات</string>
+    <string name="settings_appearance">ظاهر</string>
+    <string name="settings_language">زبان</string>
+    <string name="settings_follow_system">مطابق سیستم</string>
+    <string name="settings_light">روشن</string>
+    <string name="settings_dark">تیره</string>
+</resources>

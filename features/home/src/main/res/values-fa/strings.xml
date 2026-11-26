@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_title">خانه</string>
+    <plurals name="home_song_count">
+        <item quantity="one">%d آهنگ در کتابخانه</item>
+        <item quantity="other">%d آهنگ در کتابخانه</item>
+    </plurals>
+    <string name="home_note">اسکن و پخش موسیقی در مرحلهٔ ۲ اضافه می‌شود.</string>
+</resources>

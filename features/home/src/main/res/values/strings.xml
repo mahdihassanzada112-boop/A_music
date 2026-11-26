@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="home_title">Home</string>
+    <plurals name="home_song_count">
+        <item quantity="one">%d song in your library</item>
+        <item quantity="other">%d songs in your library</item>
+    </plurals>
+    <string name="home_note">Music scanning and playback arrive in Phase 2.</string>
+</resources>
