@@ -1,9 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="library_title">Library</string>
-    <plurals name="library_song_count">
+    <string name="library_search">Search title, artist or album</string>
+    <string name="library_empty">Nothing here yet.</string>
+    <string name="unknown">Unknown</string>
+    <string name="section_songs">All songs</string>
+    <string name="section_albums">Albums</string>
+    <string name="section_artists">Artists</string>
+    <string name="section_folders">Folders</string>
+    <string name="section_genres">Genres</string>
+    <string name="section_favorites">Favorites</string>
+    <string name="section_recently_played">Recently played</string>
+    <string name="section_recently_added">Recently added</string>
+    <string name="section_playlists">Playlists</string>
+    <string name="section_downloads">Downloads</string>
+    <string name="section_duplicates">Duplicates</string>
+    <string name="action_play_all">Play all</string>
+    <string name="action_shuffle">Shuffle</string>
+    <string name="action_play_next">Play next</string>
+    <string name="action_add_to_queue">Add to queue</string>
+    <string name="action_favorite">Add to favorites</string>
+    <string name="action_unfavorite">Remove from favorites</string>
+    <string name="action_add_to_playlist">Add to playlist</string>
+    <string name="action_remove_from_playlist">Remove from playlist</string>
+    <string name="action_move_up">Move up</string>
+    <string name="action_move_down">Move down</string>
+    <string name="action_info">Song info</string>
+    <string name="action_select_all">Select all</string>
+    <string name="action_more">More options</string>
+    <string name="action_back">Back</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="action_clear_search">Clear search</string>
+    <string name="playlist_new">New playlist</string>
+    <string name="playlist_name">Name</string>
+    <string name="playlist_rename">Rename playlist</string>
+    <string name="playlist_delete">Delete playlist</string>
+    <string name="sort_by">Sort: %s</string>
+    <string name="sort_title">Title</string>
+    <string name="sort_artist">Artist</string>
+    <string name="sort_album">Album</string>
+    <string name="sort_date">Date added</string>
+    <string name="info_title">Title</string>
+    <string name="info_artist">Artist</string>
+    <string name="info_album">Album</string>
+    <string name="info_genre">Genre</string>
+    <string name="info_folder">Folder</string>
+    <string name="info_duration">Length</string>
+    <string name="info_size">File size</string>
+    <string name="info_type">Format</string>
+    <plurals name="song_count">
         <item quantity="one">%d song</item>
         <item quantity="other">%d songs</item>
     </plurals>
-    <string name="library_note">Your songs, albums and playlists will appear here after scanning is added in Phase 2.</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
 </resources>

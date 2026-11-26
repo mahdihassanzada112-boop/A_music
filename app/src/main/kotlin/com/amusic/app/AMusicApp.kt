@@ -2,6 +2,7 @@ package com.amusic.app
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -26,7 +27,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.amusic.features.home.HomeScreen
 import com.amusic.features.library.LibraryScreen
+import com.amusic.features.player.MiniPlayer
+import com.amusic.features.player.NowPlayingScreen
 import com.amusic.features.settings.SettingsScreen
+
+private const val PLAYER_ROUTE = "player"
 
 private enum class Destination(val route: String, @param:StringRes val label: Int, val icon: ImageVector) {
     HOME("home", R.string.nav_home, Icons.Filled.Home),
@@ -35,38 +40,52 @@ private enum class Destination(val route: String, @param:StringRes val label: In
 }
 
 @Composable
-fun AMusicApp() {
+fun AMusicApp(onLibraryAccess: () -> Unit) {
     val navController = rememberNavController()
     val entry by navController.currentBackStackEntryAsState()
 
     Scaffold(
         bottomBar = {
-            NavigationBar {
-                Destination.entries.forEach { destination ->
-                    NavigationBarItem(
-                        selected = entry?.destination?.hierarchy
-                            ?.any { it.route == destination.route } == true,
-                        onClick = {
-                            navController.navigate(destination.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                        },
-                        icon = { Icon(destination.icon, contentDescription = null) },
-                        label = { Text(stringResource(destination.label)) },
-                    )
+            if (entry?.destination?.route != PLAYER_ROUTE) {
+                Column {
+                    MiniPlayer(onOpen = {
+                        navController.navigate(PLAYER_ROUTE) { launchSingleTop = true }
+                    })
+                    NavigationBar {
+                        Destination.entries.forEach { destination ->
+                            NavigationBarItem(
+                                selected = entry?.destination?.hierarchy
+                                    ?.any { it.route == destination.route } == true,
+                                onClick = {
+                                    navController.navigate(destination.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                icon = { Icon(destination.icon, contentDescription = null) },
+                                label = { Text(stringResource(destination.label)) },
+                            )
+                        }
+                    }
                 }
             }
         },
     ) { padding ->
         Box(Modifier.padding(padding).consumeWindowInsets(padding)) {
             NavHost(navController, startDestination = Destination.HOME.route) {
-                composable(Destination.HOME.route) { HomeScreen() }
-                composable(Destination.LIBRARY.route) { LibraryScreen() }
+                composable(Destination.HOME.route) {
+                    LibraryAccessGate(onLibraryAccess) { HomeScreen() }
+                }
+                composable(Destination.LIBRARY.route) {
+                    LibraryAccessGate(onLibraryAccess) { LibraryScreen() }
+                }
                 composable(Destination.SETTINGS.route) { SettingsScreen() }
+                composable(PLAYER_ROUTE) {
+                    NowPlayingScreen(onBack = { navController.popBackStack() })
+                }
             }
         }
     }

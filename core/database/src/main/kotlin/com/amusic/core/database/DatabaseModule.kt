@@ -15,8 +15,14 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun database(@ApplicationContext context: Context): AMusicDatabase =
-        Room.databaseBuilder(context, AMusicDatabase::class.java, "amusic.db").build()
+        Room.databaseBuilder(context, AMusicDatabase::class.java, "amusic.db")
+            // Version 1 shipped before scanning existed, so it never held any data.
+            .fallbackToDestructiveMigrationFrom(true, 1)
+            .build()
 
     @Provides
     fun songDao(db: AMusicDatabase): SongDao = db.songDao()
+
+    @Provides
+    fun libraryDao(db: AMusicDatabase): LibraryDao = db.libraryDao()
 }

@@ -3,4 +3,7 @@
     <string name="nav_home">خانه</string>
     <string name="nav_library">کتابخانه</string>
     <string name="nav_settings">تنظیمات</string>
+    <string name="access_reason">برای ساختن کتابخانه، برنامه به فایل‌های صوتی دستگاه شما دسترسی لازم دارد.</string>
+    <string name="access_allow">اجازه دادن</string>
+    <string name="access_settings">باز کردن تنظیمات برنامه</string>
 </resources>

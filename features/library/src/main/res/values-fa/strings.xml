@@ -1,9 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="library_title">کتابخانه</string>
-    <plurals name="library_song_count">
+    <string name="library_search">جستجوی نام، هنرمند یا آلبوم</string>
+    <string name="library_empty">هنوز چیزی اینجا نیست.</string>
+    <string name="unknown">ناشناس</string>
+    <string name="section_songs">همهٔ آهنگ‌ها</string>
+    <string name="section_albums">آلبوم‌ها</string>
+    <string name="section_artists">هنرمندان</string>
+    <string name="section_folders">پوشه‌ها</string>
+    <string name="section_genres">ژانرها</string>
+    <string name="section_favorites">پسندیده‌ها</string>
+    <string name="section_recently_played">پخش‌شده‌های اخیر</string>
+    <string name="section_recently_added">تازه اضافه‌شده</string>
+    <string name="section_playlists">فهرست‌های پخش</string>
+    <string name="section_downloads">دانلودها</string>
+    <string name="section_duplicates">تکراری‌ها</string>
+    <string name="action_play_all">پخش همه</string>
+    <string name="action_shuffle">تصادفی</string>
+    <string name="action_play_next">پخش بعدی</string>
+    <string name="action_add_to_queue">افزودن به صف</string>
+    <string name="action_favorite">افزودن به پسندیده‌ها</string>
+    <string name="action_unfavorite">حذف از پسندیده‌ها</string>
+    <string name="action_add_to_playlist">افزودن به فهرست پخش</string>
+    <string name="action_remove_from_playlist">حذف از فهرست پخش</string>
+    <string name="action_move_up">انتقال به بالا</string>
+    <string name="action_move_down">انتقال به پایین</string>
+    <string name="action_info">مشخصات آهنگ</string>
+    <string name="action_select_all">انتخاب همه</string>
+    <string name="action_more">گزینه‌های بیشتر</string>
+    <string name="action_back">بازگشت</string>
+    <string name="action_save">ذخیره</string>
+    <string name="action_cancel">لغو</string>
+    <string name="action_close">بستن</string>
+    <string name="action_clear_search">پاک کردن جستجو</string>
+    <string name="playlist_new">فهرست پخش جدید</string>
+    <string name="playlist_name">نام</string>
+    <string name="playlist_rename">تغییر نام فهرست</string>
+    <string name="playlist_delete">حذف فهرست</string>
+    <string name="sort_by">ترتیب: %s</string>
+    <string name="sort_title">نام</string>
+    <string name="sort_artist">هنرمند</string>
+    <string name="sort_album">آلبوم</string>
+    <string name="sort_date">تاریخ افزودن</string>
+    <string name="info_title">نام</string>
+    <string name="info_artist">هنرمند</string>
+    <string name="info_album">آلبوم</string>
+    <string name="info_genre">ژانر</string>
+    <string name="info_folder">پوشه</string>
+    <string name="info_duration">مدت</string>
+    <string name="info_size">حجم فایل</string>
+    <string name="info_type">قالب</string>
+    <plurals name="song_count">
         <item quantity="one">%d آهنگ</item>
         <item quantity="other">%d آهنگ</item>
     </plurals>
-    <string name="library_note">آهنگ‌ها، آلبوم‌ها و فهرست‌های پخش پس از افزودن اسکن در مرحلهٔ ۲ اینجا دیده می‌شوند.</string>
+    <plurals name="selected_count">
+        <item quantity="one">%d انتخاب‌شده</item>
+        <item quantity="other">%d انتخاب‌شده</item>
+    </plurals>
 </resources>

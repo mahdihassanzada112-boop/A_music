@@ -22,4 +22,6 @@ dependencies {
     implementation(libs.compose.ui)
     implementation(libs.compose.material3)
     implementation(libs.compose.foundation)
+    api(project(":core:common"))
+    implementation(libs.coroutines.android)
 }

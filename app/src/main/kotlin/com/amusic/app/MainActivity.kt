@@ -34,7 +34,7 @@ class MainActivity : AppCompatActivity() {
                 enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
                 onDispose {}
             }
-            AMusicTheme(dark) { AMusicApp() }
+            AMusicTheme(dark) { AMusicApp(viewModel::onLibraryAccess) }
         }
     }
 }

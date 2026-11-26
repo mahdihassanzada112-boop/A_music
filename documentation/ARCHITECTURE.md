@@ -6,7 +6,9 @@
 | core/common | Pure Kotlin types and utilities |
 | core/design | Shell theme and shared components |
 | core/database | Room database |
-| core/storage | DataStore preferences |
+| core/storage | DataStore preferences and saved playback state |
+| core/audio | The single player (MediaSessionService) and PlayerController |
+| data | MediaStore scanning and the library repository |
 | features/* | One screen area each, with its ViewModel |
 
 Features depend on core modules, never on each other. Later modules (core/audio,

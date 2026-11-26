@@ -32,4 +32,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.hilt.viewmodel.compose)
     implementation(project(":core:database"))
+    implementation(project(":core:audio"))
+    implementation(project(":data"))
 }
