@@ -30,7 +30,7 @@ dependencies {
     implementation(project(":core:design"))
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel)
-    implementation(libs.hilt.navigation.compose)
+    implementation(libs.hilt.viewmodel.compose)
     implementation(project(":core:storage"))
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)

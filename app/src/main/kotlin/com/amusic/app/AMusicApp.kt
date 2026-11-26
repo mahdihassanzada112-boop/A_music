@@ -28,7 +28,7 @@ import com.amusic.features.home.HomeScreen
 import com.amusic.features.library.LibraryScreen
 import com.amusic.features.settings.SettingsScreen
 
-private enum class Destination(val route: String, @StringRes val label: Int, val icon: ImageVector) {
+private enum class Destination(val route: String, @param:StringRes val label: Int, val icon: ImageVector) {
     HOME("home", R.string.nav_home, Icons.Filled.Home),
     LIBRARY("library", R.string.nav_library, Icons.AutoMirrored.Filled.List),
     SETTINGS("settings", R.string.nav_settings, Icons.Filled.Settings),
