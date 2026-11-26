@@ -39,7 +39,7 @@ data class PlaylistItem(val entry: PlaylistEntry, val song: Song)
 
 @Singleton
 class LibraryRepository @Inject constructor(
-    @ApplicationContext private val context: Context,
+    @param:ApplicationContext private val context: Context,
     private val scanner: MediaStoreScanner,
     private val songDao: SongDao,
     private val libraryDao: LibraryDao,

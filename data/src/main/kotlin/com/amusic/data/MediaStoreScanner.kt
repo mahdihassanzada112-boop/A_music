@@ -10,7 +10,7 @@ import com.amusic.core.database.SongEntity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class MediaStoreScanner @Inject constructor(@ApplicationContext private val context: Context) {
+class MediaStoreScanner @Inject constructor(@param:ApplicationContext private val context: Context) {
 
     /** Reads every music file indexed by Android. Throws if MediaStore cannot be queried. */
     fun scan(): List<SongEntity> {

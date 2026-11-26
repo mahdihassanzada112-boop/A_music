@@ -32,7 +32,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
  * only authority. All calls must come from the main thread.
  */
 @Singleton
-class PlayerController @Inject constructor(@ApplicationContext private val context: Context) {
+class PlayerController @Inject constructor(@param:ApplicationContext private val context: Context) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var future: ListenableFuture<MediaController>? = null
 
