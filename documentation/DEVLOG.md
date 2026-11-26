@@ -10,7 +10,7 @@ assembleDebug pass. Room schema version 1 is committed.
 Device check (reported by the owner, 2026-11-26): everything worked.
 No instrumented tests yet.
 
-## 2026-11-26 — Phase 2 (automated checks pass; device check pending)
+## 2026-11-26 — Phase 2 (complete)
 Written: library scan with live updates, legacy Persian tag repair, Room v2, all library
 sections, search, sort, multi-select, playlists, favorites, history, duplicates, one Media3
 player in a MediaSessionService, queue, shuffle, repeat, speed, sleep timer, audio focus,
@@ -30,3 +30,5 @@ saved queue, history).
 Needs a real device: notification and lock screen controls, background playback, Bluetooth
 and headphone events, audio interruptions, restore after restart, sleep timer, a large
 library, and the screens in both languages.
+
+Device check (reported by the owner, 2026-11-26): everything worked.
