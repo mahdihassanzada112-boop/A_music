@@ -1,5 +1,8 @@
 package com.amusic.app
 
+import androidx.compose.ui.semantics.SemanticsNode
+import androidx.compose.ui.semantics.SemanticsProperties
+import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.ComposeTestRule
@@ -10,7 +13,6 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
-import androidx.compose.ui.test.printToString
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.amusic.core.common.OrientationMode
@@ -114,11 +116,24 @@ class LyricsVisualizerTest {
         try {
             waitUntil(20_000, condition)
         } catch (e: ComposeTimeoutException) {
-            val screen = runCatching { onAllNodes(isRoot()).printToString(maxDepth = 30) }.getOrDefault("?")
+            // The test log shows only the first line of a message.
+            val screen = runCatching {
+                onAllNodes(isRoot()).fetchSemanticsNodes(atLeastOneRootRequired = false)
+                    .flatMap { describe(it) }.joinToString(" | ")
+            }.getOrElse { it.toString() }
+            val settings = runBlocking { DeviceFixture.access.settings().visualizer.first() }
             val theme = runBlocking { DeviceFixture.access.settings().themeId.first() }
-            // The test log stops at the first empty line.
-            val lines = screen.lines().filter { it.isNotBlank() }.joinToString("\n")
-            throw AssertionError("No $what in $theme. On screen:\n$lines", e)
+            throw AssertionError("No $what in $theme, $settings. On screen: $screen", e)
         }
+    }
+
+    private fun describe(node: SemanticsNode): List<String> {
+        val own = listOfNotNull(
+            node.config.getOrNull(SemanticsProperties.TestTag),
+            node.config.getOrNull(SemanticsProperties.ContentDescription)?.joinToString(),
+            node.config.getOrNull(SemanticsProperties.Text)?.joinToString(),
+        )
+        val line = if (own.isEmpty()) emptyList() else listOf("${own.joinToString("/")} ${node.boundsInRoot}")
+        return line + node.children.flatMap { describe(it) }
     }
 }
