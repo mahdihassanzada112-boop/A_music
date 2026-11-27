@@ -79,6 +79,12 @@ class LyricsVisualizerTest {
 
                     compose.click(ThemingR.string.orientation_switch)
                     compose.waitForTag("player_portrait")
+                    // On a wide landscape screen the lyrics stayed open beside the visualizer,
+                    // and portrait has room for only one: the button swaps to the visualizer.
+                    if (compose.onAllNodesWithTag("lyrics_panel").fetchSemanticsNodes().isNotEmpty()) {
+                        compose.waitForText("first test line")
+                        compose.click(ThemingR.string.player_visualizer)
+                    }
                     compose.waitForTag("visualizer")
                     assertEquals(0, player.state.value.index)
 
