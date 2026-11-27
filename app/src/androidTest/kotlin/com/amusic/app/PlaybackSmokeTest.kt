@@ -31,6 +31,12 @@ class PlaybackSmokeTest {
 
             withContext(Dispatchers.Main) { player.next() }
             withTimeout(10_000) { player.state.first { it.current?.songId == songs[1].id } }
+            // A song enters the history only once it is audible, so let it start before pausing.
+            waitUntil {
+                player.state.value.isPlaying &&
+                    withContext(Dispatchers.Main) { player.positionMs() } > 500
+            }
+            withTimeout(10_000) { library.recentlyPlayed.first { it.size >= 2 } }
 
             withContext(Dispatchers.Main) { player.togglePlay() }
             withTimeout(10_000) { player.state.first { !it.isPlaying } }
