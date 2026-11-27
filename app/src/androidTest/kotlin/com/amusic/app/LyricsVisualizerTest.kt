@@ -19,6 +19,7 @@ import com.amusic.core.common.VisualizerSettings
 import com.amusic.core.theming.R as ThemingR
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
@@ -114,7 +115,10 @@ class LyricsVisualizerTest {
             waitUntil(20_000, condition)
         } catch (e: ComposeTimeoutException) {
             val screen = runCatching { onAllNodes(isRoot()).printToString(maxDepth = 30) }.getOrDefault("?")
-            throw AssertionError("No $what. On screen:\n$screen", e)
+            val theme = runBlocking { DeviceFixture.access.settings().themeId.first() }
+            // The test log stops at the first empty line.
+            val lines = screen.lines().filter { it.isNotBlank() }.joinToString("\n")
+            throw AssertionError("No $what in $theme. On screen:\n$lines", e)
         }
     }
 }
