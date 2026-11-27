@@ -35,7 +35,7 @@ class PlayerViewModel @Inject constructor(
 ) : ViewModel() {
     private val sleepMinutes = sleepTimer.endsAt.flatMapLatest { end ->
         if (end == null) {
-            flowOf(null)
+            flowOf<Int?>(null)
         } else {
             flow {
                 while (true) {
