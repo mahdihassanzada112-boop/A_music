@@ -23,6 +23,15 @@ themes/*, player, lyrics, visualizer, rendering) are added in the phase that nee
 - Room holds structured data and profiles; DataStore holds current selections.
 - On large screens, orientation choice switches the in-app layout (the system may ignore locks).
 
+## Lyrics and visualizers
+Lyrics are typed or imported by the user and stored in Room (database version 3, with a real
+migration). The player hands themes parsed lines; one shared panel draws them.
+
+`AudioAnalyzer` receives a copy of the decoded audio from a Media3 `TeeAudioProcessor`. It
+computes a spectrum only while a visualizer is on screen, and releases each result when that
+audio becomes audible (`PlayoutQueue` models the output buffer, so timing is approximate).
+Themes read it through the `AudioFeed` interface.
+
 ## Phase order
 1 Foundation · 2 Local playback and audio chain · 3 Theme contract + Dark Modern and
 Glass UI (portrait and landscape) · 4 Lyrics and visualizers · 5 Background Studio ·

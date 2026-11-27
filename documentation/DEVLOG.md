@@ -54,3 +54,11 @@ gallery previews, landscape on small and large screens, and Auto rotation.
 APK signed with the Phase 2 debug key built in run 45948415501.
 
 Device check (reported by the owner, 2026-11-27): everything worked.
+
+## 2026-11-27 — Phase 4 (in progress)
+- Lyrics: LRC and plain text, highlight and auto-scroll, tap a line to seek, import from a
+  file (UTF-8, UTF-16 or Windows-1256), editor, timing shift, removal.
+- Nine visualizer styles with color, intensity, speed and sensitivity settings.
+- Not included: online lyrics providers and their cache (Phase 9), lyrics read from audio
+  tags or from files beside the song, visualizers as backgrounds (Phase 5).
+

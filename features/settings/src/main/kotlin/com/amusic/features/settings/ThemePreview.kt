@@ -20,9 +20,11 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.amusic.core.common.OrientationMode
+import com.amusic.core.common.VisualizerSettings
 import com.amusic.core.theming.ApplyTheme
 import com.amusic.core.theming.LocalDarkTheme
 import com.amusic.core.theming.PlayerActions
+import com.amusic.core.theming.PlayerPanel
 import com.amusic.core.theming.PlayerTheme
 import com.amusic.core.theming.PlayerUi
 import com.amusic.core.theming.RepeatUi
@@ -43,6 +45,7 @@ internal fun ThemePreview(theme: PlayerTheme, landscape: Boolean) {
             speed = 1f, favorite = true, hasError = false,
             queue = List(4) { com.amusic.core.theming.QueueEntry("$title ${it + 1}", artist) },
             queueIndex = 0, sleepMinutesLeft = null, orientationMode = OrientationMode.AUTO,
+            panel = PlayerPanel.NONE, lyrics = null, visualizer = VisualizerSettings(),
         )
     }
     val position = remember { mutableLongStateOf(92_000) }
@@ -96,4 +99,11 @@ private object NoActions : PlayerActions {
     override fun move(from: Int, to: Int) = Unit
     override fun clearQueue() = Unit
     override fun setOrientationMode(mode: OrientationMode) = Unit
+    override fun showPanel(panel: PlayerPanel) = Unit
+    override fun setVisualizer(settings: VisualizerSettings) = Unit
+    override fun openVisualizerOptions() = Unit
+    override fun importLyrics() = Unit
+    override fun editLyrics() = Unit
+    override fun removeLyrics() = Unit
+    override fun setLyricsOffset(offsetMs: Long) = Unit
 }

@@ -4,6 +4,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import com.amusic.core.common.OrientationMode
 import com.amusic.core.common.ThemeId
 import com.amusic.core.common.ThemeMode
+import com.amusic.core.common.VisualizerColor
+import com.amusic.core.common.VisualizerSettings
+import com.amusic.core.common.VisualizerStyle
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -41,5 +44,21 @@ class SettingsRepositoryTest {
         assertEquals(ThemeId.DARK_MODERN, repository.themeId.first())
         assertEquals(OrientationMode.AUTO, repository.orientationMode.first())
         assertEquals(ThemeMode.LIGHT, repository.themeMode.first())
+    }
+
+    @Test
+    fun visualizerSettingsPersistWithinLimits() = runTest {
+        val store = PreferenceDataStoreFactory.create(scope = backgroundScope) {
+            folder.root.resolve("visualizer.preferences_pb")
+        }
+        val repository = SettingsRepository(store)
+        assertEquals(VisualizerSettings(), repository.visualizer.first())
+        repository.setVisualizer(
+            VisualizerSettings(true, VisualizerStyle.RETRO, VisualizerColor.CYAN, 9f, 0.7f, 0f),
+        )
+        assertEquals(
+            VisualizerSettings(true, VisualizerStyle.RETRO, VisualizerColor.CYAN, 1.5f, 0.7f, 0.5f),
+            repository.visualizer.first(),
+        )
     }
 }

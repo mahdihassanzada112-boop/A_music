@@ -23,6 +23,8 @@ dependencies {
     implementation(libs.compose.foundation)
     implementation(libs.compose.material3)
     implementation(libs.compose.icons)
+    implementation(libs.compose.animation.core)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     api(platform(libs.compose.bom))
     api(libs.compose.ui)
     api(libs.compose.material3)

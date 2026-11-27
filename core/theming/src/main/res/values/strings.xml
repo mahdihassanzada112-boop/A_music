@@ -2,7 +2,6 @@
 <resources>
     <string name="player_title">Now playing</string>
     <string name="player_queue">Queue</string>
-    <string name="player_close_queue">Close queue</string>
     <string name="player_back">Back</string>
     <string name="player_open">Open player</string>
     <string name="player_error">This file could not be played.</string>
@@ -43,4 +42,48 @@
         <item quantity="one">%d song in your library</item>
         <item quantity="other">%d songs in your library</item>
     </plurals>
+    <string name="player_lyrics">Lyrics</string>
+    <string name="player_visualizer">Visualizer</string>
+    <string name="lyrics_none">No lyrics for this song yet.</string>
+    <string name="lyrics_import">Import a file</string>
+    <string name="lyrics_write">Write or paste</string>
+    <string name="lyrics_edit">Edit</string>
+    <string name="lyrics_remove">Remove lyrics</string>
+    <string name="lyrics_remove_confirm">Remove the lyrics saved for this song?</string>
+    <string name="lyrics_reset_timing">Reset timing</string>
+    <string name="lyrics_options">Lyrics options</string>
+    <string name="lyrics_earlier">Earlier</string>
+    <string name="lyrics_later">Later</string>
+    <string name="lyrics_offset">Shift %+.1f s</string>
+    <string name="lyrics_unsynced">These lyrics have no timing.</string>
+    <string name="lyrics_editor_title">Lyrics</string>
+    <string name="lyrics_editor_hint">Plain text, or LRC lines such as [00:12.50] words</string>
+    <string name="lyrics_imported">Lyrics imported.</string>
+    <string name="lyrics_import_empty">The file is empty.</string>
+    <string name="lyrics_import_too_large">The file is too large for lyrics.</string>
+    <string name="lyrics_import_unreadable">This file could not be read as text.</string>
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_close">Close</string>
+    <string name="visualizer_options">Visualizer options</string>
+    <string name="visualizer_style">Style</string>
+    <string name="visualizer_color">Color</string>
+    <string name="visualizer_intensity">Intensity</string>
+    <string name="visualizer_speed">Speed</string>
+    <string name="visualizer_sensitivity">Sensitivity</string>
+    <string name="style_bars">Spectrum bars</string>
+    <string name="style_circular">Circular</string>
+    <string name="style_waveform">Waveform</string>
+    <string name="style_neon">Neon waves</string>
+    <string name="style_particles">Particles</string>
+    <string name="style_fluid">Fluid waves</string>
+    <string name="style_depth">3D</string>
+    <string name="style_retro">Retro meter</string>
+    <string name="style_minimal">Minimal</string>
+    <string name="color_theme">Theme</string>
+    <string name="color_amber">Amber</string>
+    <string name="color_cyan">Cyan</string>
+    <string name="color_magenta">Magenta</string>
+    <string name="color_green">Green</string>
+    <string name="color_rainbow">Rainbow</string>
 </resources>

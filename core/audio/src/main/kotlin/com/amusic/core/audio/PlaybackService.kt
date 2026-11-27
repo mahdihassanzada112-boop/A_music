@@ -2,6 +2,7 @@ package com.amusic.core.audio
 
 import android.app.PendingIntent
 import android.os.SystemClock
+import android.content.Context
 import androidx.annotation.OptIn
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -9,7 +10,11 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.audio.AudioSink
+import androidx.media3.exoplayer.audio.DefaultAudioSink
+import androidx.media3.exoplayer.audio.TeeAudioProcessor
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.amusic.core.storage.PlaybackStateStore
@@ -36,6 +41,7 @@ class PlaybackService : MediaSessionService() {
     @Inject lateinit var stateStore: PlaybackStateStore
     @Inject lateinit var library: LibraryRepository
     @Inject lateinit var sleepTimer: SleepTimer
+    @Inject lateinit var analyzer: AudioAnalyzer
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var session: MediaSession? = null
@@ -48,7 +54,7 @@ class PlaybackService : MediaSessionService() {
 
     override fun onCreate() {
         super.onCreate()
-        val player = ExoPlayer.Builder(this)
+        val player = ExoPlayer.Builder(this, renderers())
             .setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(C.USAGE_MEDIA)
@@ -96,12 +102,28 @@ class PlaybackService : MediaSessionService() {
             release()
         }
         session = null
+        analyzer.setPlaying(false)
         scope.cancel()
         super.onDestroy()
     }
 
+    /** The default audio output, with a read-only tap for the visualizers. */
+    private fun renderers() = object : DefaultRenderersFactory(this) {
+        override fun buildAudioSink(
+            context: Context,
+            enableFloatOutput: Boolean,
+            enableAudioTrackPlaybackParams: Boolean,
+        ): AudioSink = DefaultAudioSink.Builder(context)
+            .setEnableFloatOutput(enableFloatOutput)
+            .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
+            .setAudioProcessors(arrayOf(TeeAudioProcessor(analyzer)))
+            .build()
+    }
+
     private val listener = object : Player.Listener {
         override fun onEvents(player: Player, events: Player.Events) {
+            analyzer.setSpeed(player.playbackParameters.speed)
+            analyzer.setPlaying(player.isPlaying)
             if (events.containsAny(
                     Player.EVENT_TIMELINE_CHANGED,
                     Player.EVENT_MEDIA_ITEM_TRANSITION,

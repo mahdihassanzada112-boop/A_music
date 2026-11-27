@@ -4,9 +4,17 @@ import android.net.Uri
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
 import com.amusic.core.common.OrientationMode
+import com.amusic.core.common.ParsedLyrics
 import com.amusic.core.common.Song
+import com.amusic.core.common.VisualizerSettings
 
 enum class RepeatUi { OFF, ALL, ONE }
+
+/** What the player shows besides its controls. */
+enum class PlayerPanel { NONE, QUEUE, LYRICS }
+
+@Immutable
+data class LyricsUi(val parsed: ParsedLyrics, val offsetMs: Long)
 
 @Immutable
 data class QueueEntry(val title: String, val artist: String)
@@ -31,6 +39,10 @@ data class PlayerUi(
     /** Minutes until playback pauses, or null when the sleep timer is off. */
     val sleepMinutesLeft: Int?,
     val orientationMode: OrientationMode,
+    val panel: PlayerPanel,
+    /** null when the current song has no lyrics. */
+    val lyrics: LyricsUi?,
+    val visualizer: VisualizerSettings,
 )
 
 /** The only ways a theme can change anything. */
@@ -51,6 +63,14 @@ interface PlayerActions {
     fun move(from: Int, to: Int)
     fun clearQueue()
     fun setOrientationMode(mode: OrientationMode)
+    fun showPanel(panel: PlayerPanel)
+    fun setVisualizer(settings: VisualizerSettings)
+    fun openVisualizerOptions()
+    fun importLyrics()
+    fun editLyrics()
+    /** Asks for confirmation first. */
+    fun removeLyrics()
+    fun setLyricsOffset(offsetMs: Long)
 }
 
 /** Position changes twice a second, so it is separate from [PlayerUi]. */

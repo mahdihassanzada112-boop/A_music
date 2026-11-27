@@ -18,12 +18,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +37,12 @@ import com.amusic.core.theming.FadingArtwork
 import com.amusic.core.theming.FavoriteButton
 import com.amusic.core.theming.LeftToRight
 import com.amusic.core.theming.NextButton
+import com.amusic.core.theming.LyricsButton
+import com.amusic.core.theming.LyricsPanel
+import com.amusic.core.theming.PlayerPanel
+import com.amusic.core.theming.QueueButton
+import com.amusic.core.theming.VisualizerButton
+import com.amusic.core.theming.VisualizerStage
 import com.amusic.core.theming.OrientationControls
 import com.amusic.core.theming.PlayButton
 import com.amusic.core.theming.PlayerActions
@@ -58,15 +60,19 @@ import com.amusic.core.theming.R as ThemingR
 /** Portrait: large square art, start-aligned titles, controls within thumb reach. */
 @Composable
 internal fun DarkPortraitPlayer(ui: PlayerUi, position: Position, actions: PlayerActions) {
-    var showQueue by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().testTag("player_portrait")) {
         TopBar(ui, actions, isLandscape = false)
-        if (showQueue) {
-            QueuePanel(ui, actions, Modifier.weight(1f).fillMaxWidth())
-            QueueToggle(true) { showQueue = false }
-        } else {
-            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-                val art = min(maxWidth - 48.dp, maxHeight * 0.46f)
+        when (ui.panel) {
+            PlayerPanel.QUEUE -> QueuePanel(ui, actions, Modifier.weight(1f).fillMaxWidth())
+            PlayerPanel.LYRICS -> {
+                LyricsPanel(ui, position, actions, Modifier.weight(1f).fillMaxWidth().padding(horizontal = 8.dp))
+                Column(Modifier.padding(horizontal = 24.dp)) {
+                    Timeline(ui, position, actions)
+                    Transport(ui, actions, 60.dp)
+                }
+            }
+            PlayerPanel.NONE -> BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+                val art = min(maxWidth - 48.dp, maxHeight * 0.44f)
                 val full = maxHeight
                 Column(
                     Modifier.fillMaxWidth().verticalScroll(rememberScrollState())
@@ -74,42 +80,48 @@ internal fun DarkPortraitPlayer(ui: PlayerUi, position: Position, actions: Playe
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Art(ui, art)
+                    Stage(ui, actions, art)
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                         Titles(ui, TextAlign.Start, Modifier.weight(1f))
                         FavoriteButton(ui, actions, MaterialTheme.colorScheme.primary)
                     }
                     Timeline(ui, position, actions)
                     Transport(ui, actions, 76.dp)
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        QueueToggle(false) { showQueue = true }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                         SpeedMenu(ui, actions)
                         SleepMenu(ui, actions)
                     }
                 }
             }
         }
+        Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+            val accent = MaterialTheme.colorScheme.primary
+            QueueButton(ui, actions, accent)
+            LyricsButton(ui, actions, accent)
+            VisualizerButton(ui, actions, accent, stageVisible = ui.panel == PlayerPanel.NONE)
+        }
     }
 }
 
-/** Landscape: artwork, then information and controls, then a queue column. */
+/** Landscape: artwork, then information and controls, then a queue or lyrics column. */
 @Composable
 internal fun DarkLandscapePlayer(ui: PlayerUi, position: Position, actions: PlayerActions) {
-    var showQueue by rememberSaveable { mutableStateOf(false) }
     BoxWithConstraints(Modifier.fillMaxSize().testTag("player_landscape")) {
-        // A third column only fits on wider screens; otherwise the queue replaces the artwork.
+        // A third column only fits on wider screens; otherwise panels replace the artwork.
         val threeColumns = maxWidth >= 640.dp
+        val lyrics = ui.panel == PlayerPanel.LYRICS
         val art = min(maxHeight - 32.dp, maxWidth * 0.3f)
-        val queueWidth = min(maxWidth * 0.28f, 320.dp)
+        val panelWidth = maxWidth * 0.44f
+        val sideWidth = if (lyrics) min(maxWidth * 0.34f, 380.dp) else min(maxWidth * 0.28f, 320.dp)
         Row(
             Modifier.fillMaxSize().padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (!threeColumns && showQueue) {
-                QueuePanel(ui, actions, Modifier.width(art).fillMaxHeight())
-            } else {
-                Art(ui, art)
+            when {
+                threeColumns || ui.panel == PlayerPanel.NONE -> Stage(ui, actions, art)
+                lyrics -> LyricsPanel(ui, position, actions, Modifier.width(panelWidth).fillMaxHeight())
+                else -> QueuePanel(ui, actions, Modifier.width(panelWidth).fillMaxHeight())
             }
             Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()),
@@ -123,26 +135,50 @@ internal fun DarkLandscapePlayer(ui: PlayerUi, position: Position, actions: Play
                 Timeline(ui, position, actions)
                 Transport(ui, actions, 60.dp)
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                    if (!threeColumns) QueueToggle(showQueue) { showQueue = !showQueue }
+                    val accent = MaterialTheme.colorScheme.primary
+                    // With a third column the queue is already on screen.
+                    if (!threeColumns) QueueButton(ui, actions, accent)
+                    LyricsButton(ui, actions, accent)
+                    VisualizerButton(
+                        ui, actions, accent,
+                        stageVisible = threeColumns || ui.panel == PlayerPanel.NONE,
+                    )
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     SpeedMenu(ui, actions)
                     SleepMenu(ui, actions)
                 }
             }
             if (threeColumns) {
                 Column(
-                    Modifier.width(queueWidth).fillMaxHeight()
+                    Modifier.width(sideWidth).fillMaxHeight()
                         .padding(vertical = 8.dp).clip(MaterialTheme.shapes.large)
                         .background(MaterialTheme.colorScheme.surfaceContainer),
                 ) {
                     Text(
-                        stringResource(ThemingR.string.player_queue),
+                        stringResource(if (lyrics) ThemingR.string.player_lyrics else ThemingR.string.player_queue),
                         Modifier.padding(16.dp),
                         style = MaterialTheme.typography.titleMedium,
                     )
-                    QueuePanel(ui, actions, Modifier.weight(1f).fillMaxWidth())
+                    val rest = Modifier.weight(1f).fillMaxWidth()
+                    if (lyrics) LyricsPanel(ui, position, actions, rest) else QueuePanel(ui, actions, rest)
                 }
             }
         }
+    }
+}
+
+/** Artwork or, when chosen, the visualizer in the same square. */
+@Composable
+private fun Stage(ui: PlayerUi, actions: PlayerActions, size: Dp) {
+    if (ui.visualizer.enabled) {
+        VisualizerStage(
+            ui, actions,
+            Modifier.size(size).clip(MaterialTheme.shapes.large)
+                .background(MaterialTheme.colorScheme.surfaceContainer).padding(8.dp),
+        )
+    } else {
+        Art(ui, size)
     }
 }
 
@@ -219,9 +255,3 @@ private fun Transport(ui: PlayerUi, actions: PlayerActions, playSize: Dp) = Left
     }
 }
 
-@Composable
-private fun QueueToggle(open: Boolean, onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
-        Text(stringResource(if (open) ThemingR.string.player_close_queue else ThemingR.string.player_queue))
-    }
-}

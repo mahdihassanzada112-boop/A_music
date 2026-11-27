@@ -39,6 +39,10 @@ data class PlaylistSongEntity(
 @Entity(tableName = "play_history")
 data class PlayHistoryEntity(@PrimaryKey val songId: Long, val lastPlayedAt: Long, val playCount: Int)
 
+/** Keyed by song without a foreign key, so a rescan never deletes what the user typed. */
+@Entity(tableName = "lyrics")
+data class LyricsEntity(@PrimaryKey val songId: Long, val content: String, val offsetMs: Long)
+
 data class PlaylistSummary(val id: Long, val name: String, val songCount: Int)
 
 data class PlaylistEntry(val entryId: Long, val position: Int, @Embedded val song: SongEntity)

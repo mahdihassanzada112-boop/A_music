@@ -15,6 +15,8 @@ import java.io.File
 import java.io.OutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
+import kotlin.math.PI
+import kotlin.math.sin
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeout
 
@@ -71,7 +73,7 @@ object DeviceFixture {
         }
     }
 
-    /** Sixty seconds of silence: mono, 16-bit, 8 kHz. */
+    /** Sixty seconds of a quiet 440 Hz tone: mono, 16-bit, 8 kHz. */
     private fun writeWav(out: OutputStream) {
         val rate = 8_000
         val dataSize = rate * 2 * 60
@@ -80,6 +82,10 @@ object DeviceFixture {
         header.putInt(16).putShort(1).putShort(1).putInt(rate).putInt(rate * 2)
         header.putShort(2).putShort(16).put("data".toByteArray()).putInt(dataSize)
         out.write(header.array())
-        out.write(ByteArray(dataSize))
+        val samples = ByteBuffer.allocate(dataSize).order(ByteOrder.LITTLE_ENDIAN)
+        repeat(dataSize / 2) {
+            samples.putShort((sin(2 * PI * 440 * it / rate) * 6_000).toInt().toShort())
+        }
+        out.write(samples.array())
     }
 }

@@ -7,11 +7,13 @@ import androidx.room.RoomDatabase
     entities = [
         SongEntity::class, FavoriteEntity::class, PlaylistEntity::class,
         PlaylistSongEntity::class, PlayHistoryEntity::class,
+        LyricsEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class AMusicDatabase : RoomDatabase() {
     abstract fun songDao(): SongDao
     abstract fun libraryDao(): LibraryDao
+    abstract fun lyricsDao(): LyricsDao
 }

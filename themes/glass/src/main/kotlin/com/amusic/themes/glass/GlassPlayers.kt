@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,14 +24,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +46,12 @@ import com.amusic.core.theming.FadingArtwork
 import com.amusic.core.theming.FavoriteButton
 import com.amusic.core.theming.LeftToRight
 import com.amusic.core.theming.NextButton
+import com.amusic.core.theming.LyricsButton
+import com.amusic.core.theming.LyricsPanel
+import com.amusic.core.theming.PlayerPanel
+import com.amusic.core.theming.QueueButton
+import com.amusic.core.theming.VisualizerButton
+import com.amusic.core.theming.VisualizerStage
 import com.amusic.core.theming.OrientationControls
 import com.amusic.core.theming.PlayButton
 import com.amusic.core.theming.PlayerActions
@@ -66,17 +69,22 @@ import com.amusic.core.theming.R as ThemingR
 /** Portrait: a turning disc floating above one pane of information and controls. */
 @Composable
 internal fun GlassPortraitPlayer(ui: PlayerUi, position: Position, actions: PlayerActions) {
-    var showQueue by rememberSaveable { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().testTag("player_portrait").padding(horizontal = 16.dp)) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             BackButton(actions)
             Box(Modifier.weight(1f))
             OrientationControls(ui, actions, isLandscape = false)
         }
-        if (showQueue) {
-            QueuePanel(ui, actions, Modifier.weight(1f).fillMaxWidth().glass())
-        } else {
-            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+        when (ui.panel) {
+            PlayerPanel.QUEUE -> QueuePanel(ui, actions, Modifier.weight(1f).fillMaxWidth().glass())
+            PlayerPanel.LYRICS -> {
+                LyricsPanel(ui, position, actions, Modifier.weight(1f).fillMaxWidth().glass())
+                Column(Modifier.padding(top = 8.dp).fillMaxWidth().glass().padding(horizontal = 20.dp, vertical = 8.dp)) {
+                    Timeline(ui, position, actions)
+                    Transport(ui, actions, 56.dp)
+                }
+            }
+            PlayerPanel.NONE -> BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
                 val disc = min(maxWidth - 80.dp, maxHeight * 0.38f)
                 val full = maxHeight
                 Column(
@@ -84,24 +92,18 @@ internal fun GlassPortraitPlayer(ui: PlayerUi, position: Position, actions: Play
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Disc(ui, disc)
+                    if (ui.visualizer.enabled) {
+                        VisualizerStage(ui, actions, Modifier.fillMaxWidth().height(disc).glass().padding(12.dp))
+                    } else {
+                        Disc(ui, disc)
+                    }
                     Column(
                         Modifier.fillMaxWidth().glass().padding(20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Titles(ui)
                         Timeline(ui, position, actions)
-                        LeftToRight {
-                            Row(
-                                Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceEvenly,
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                PreviousButton(actions)
-                                Play(ui, actions, 72.dp)
-                                NextButton(actions)
-                            }
-                        }
+                        Transport(ui, actions, 72.dp)
                     }
                 }
             }
@@ -113,10 +115,13 @@ internal fun GlassPortraitPlayer(ui: PlayerUi, position: Position, actions: Play
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                ShuffleButton(ui, actions, MaterialTheme.colorScheme.primary)
+                val accent = MaterialTheme.colorScheme.primary
+                ShuffleButton(ui, actions, accent)
                 FavoriteButton(ui, actions, FavoriteTint)
-                QueueToggle(showQueue) { showQueue = !showQueue }
-                RepeatButton(ui, actions, MaterialTheme.colorScheme.primary)
+                QueueButton(ui, actions, accent)
+                LyricsButton(ui, actions, accent)
+                VisualizerButton(ui, actions, accent, stageVisible = ui.panel == PlayerPanel.NONE)
+                RepeatButton(ui, actions, accent)
             }
         }
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
@@ -126,48 +131,39 @@ internal fun GlassPortraitPlayer(ui: PlayerUi, position: Position, actions: Play
     }
 }
 
-/** Landscape: a stage pane and a queue pane above a full-width control dock. */
+/** Landscape: a stage pane and a side pane above a full-width control dock. */
 @Composable
 internal fun GlassLandscapePlayer(ui: PlayerUi, position: Position, actions: PlayerActions) {
-    var showQueue by rememberSaveable { mutableStateOf(false) }
     BoxWithConstraints(Modifier.fillMaxSize().testTag("player_landscape")) {
-        val sideQueue = maxWidth >= 640.dp
-        val queueWidth = min(maxWidth * 0.32f, 340.dp)
+        val sidePane = maxWidth >= 640.dp
+        val lyrics = ui.panel == PlayerPanel.LYRICS
+        val sideWidth = if (lyrics) min(maxWidth * 0.4f, 420.dp) else min(maxWidth * 0.32f, 340.dp)
+        // On narrow screens a panel takes the place of the disc.
+        val stageVisible = sidePane || ui.panel == PlayerPanel.NONE
         Column(Modifier.fillMaxSize().padding(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (!sideQueue && showQueue) {
-                    QueuePanel(ui, actions, Modifier.weight(1f).fillMaxHeight().glass())
-                } else {
-                    Column(Modifier.weight(1f).fillMaxHeight().glass()) {
-                        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                            BackButton(actions)
-                            Box(Modifier.weight(1f))
-                            OrientationControls(ui, actions, isLandscape = true)
+                Column(Modifier.weight(1f).fillMaxHeight().glass()) {
+                    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                        BackButton(actions)
+                        Row(Modifier.weight(1f), horizontalArrangement = Arrangement.Center) {
+                            val accent = MaterialTheme.colorScheme.primary
+                            // With a side pane the queue is already on screen.
+                            if (!sidePane) QueueButton(ui, actions, accent)
+                            LyricsButton(ui, actions, accent)
+                            VisualizerButton(ui, actions, accent, stageVisible)
                         }
-                        BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-                            val disc = min(maxHeight - 12.dp, maxWidth * 0.4f).coerceAtLeast(48.dp)
-                            Row(
-                                Modifier.fillMaxSize().padding(horizontal = 16.dp),
-                                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Disc(ui, disc)
-                                Column(
-                                    Modifier.weight(1f).verticalScroll(rememberScrollState()),
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                ) {
-                                    Titles(ui)
-                                    Row {
-                                        SpeedMenu(ui, actions)
-                                        SleepMenu(ui, actions)
-                                    }
-                                }
-                            }
-                        }
+                        OrientationControls(ui, actions, isLandscape = true)
+                    }
+                    val body = Modifier.weight(1f).fillMaxWidth()
+                    when {
+                        stageVisible -> LandscapeStage(ui, actions, body)
+                        lyrics -> LyricsPanel(ui, position, actions, body)
+                        else -> QueuePanel(ui, actions, body)
                     }
                 }
-                if (sideQueue) {
-                    QueuePanel(ui, actions, Modifier.width(queueWidth).fillMaxHeight().glass())
+                if (sidePane) {
+                    val pane = Modifier.width(sideWidth).fillMaxHeight().glass()
+                    if (lyrics) LyricsPanel(ui, position, actions, pane) else QueuePanel(ui, actions, pane)
                 }
             }
             LeftToRight {
@@ -182,10 +178,50 @@ internal fun GlassLandscapePlayer(ui: PlayerUi, position: Position, actions: Pla
                     RepeatButton(ui, actions, MaterialTheme.colorScheme.primary)
                     Timeline(ui, position, actions, Modifier.weight(1f).padding(horizontal = 12.dp))
                     FavoriteButton(ui, actions, FavoriteTint)
-                    if (!sideQueue) QueueToggle(showQueue) { showQueue = !showQueue }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun LandscapeStage(ui: PlayerUi, actions: PlayerActions, modifier: Modifier) {
+    BoxWithConstraints(modifier) {
+        val disc = min(maxHeight - 12.dp, maxWidth * 0.4f).coerceAtLeast(48.dp)
+        Row(
+            Modifier.fillMaxSize().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (ui.visualizer.enabled) {
+                VisualizerStage(ui, actions, Modifier.width(disc * 1.3f).height(disc))
+            } else {
+                Disc(ui, disc)
+            }
+            Column(
+                Modifier.weight(1f).verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Titles(ui)
+                Row {
+                    SpeedMenu(ui, actions)
+                    SleepMenu(ui, actions)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun Transport(ui: PlayerUi, actions: PlayerActions, size: Dp) = LeftToRight {
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        PreviousButton(actions)
+        Play(ui, actions, size)
+        NextButton(actions)
     }
 }
 
@@ -250,13 +286,3 @@ private fun Timeline(ui: PlayerUi, position: Position, actions: PlayerActions, m
 private fun Play(ui: PlayerUi, actions: PlayerActions, size: Dp) = PlayButton(
     ui, actions, size, MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary,
 )
-
-@Composable
-private fun QueueToggle(open: Boolean, onClick: () -> Unit) {
-    TextButton(onClick = onClick) {
-        Text(
-            stringResource(if (open) ThemingR.string.player_close_queue else ThemingR.string.player_queue),
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-    }
-}

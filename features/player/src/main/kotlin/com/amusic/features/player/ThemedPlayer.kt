@@ -4,6 +4,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -14,11 +17,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -31,17 +38,25 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
 import com.amusic.core.common.OrientationMode
+import com.amusic.core.common.VisualizerSettings
+import com.amusic.core.theming.LocalAudioFeed
 import com.amusic.core.theming.LocalPlayerTheme
+import com.amusic.core.theming.LyricsEditorDialog
 import com.amusic.core.theming.PlayerActions
+import com.amusic.core.theming.PlayerPanel
 import com.amusic.core.theming.PlayerUi
 import com.amusic.core.theming.Position
+import com.amusic.core.theming.RemoveLyricsDialog
+import com.amusic.core.theming.VisualizerDialog
 import com.amusic.core.theming.R as ThemingR
+import com.amusic.data.ImportResult
 import kotlinx.coroutines.delay
 
 private class Actions(
     private val vm: PlayerViewModel,
     private val onBack: () -> Unit,
     private val position: androidx.compose.runtime.MutableLongState,
+    private val onImport: () -> Unit,
 ) : PlayerActions {
     override fun back() = onBack()
     override fun togglePlay() = vm.togglePlay()
@@ -61,23 +76,37 @@ private class Actions(
     override fun move(from: Int, to: Int) = vm.move(from, to)
     override fun clearQueue() = vm.clearQueue()
     override fun setOrientationMode(mode: OrientationMode) = vm.setOrientationMode(mode)
+    override fun showPanel(panel: PlayerPanel) = vm.showPanel(panel)
+    override fun setVisualizer(settings: VisualizerSettings) = vm.setVisualizer(settings)
+    override fun openVisualizerOptions() {
+        vm.showVisualizerOptions = true
+    }
+    override fun importLyrics() = onImport()
+    override fun editLyrics() = vm.editLyrics()
+    override fun removeLyrics() = vm.askToRemoveLyrics()
+    override fun setLyricsOffset(offsetMs: Long) = vm.setLyricsOffset(offsetMs)
 }
 
 private class Session(val ui: PlayerUi, val position: Position, val actions: PlayerActions)
 
 /** Connects the shared playback state to whichever theme draws it. */
 @Composable
-private fun rememberSession(vm: PlayerViewModel, onBack: () -> Unit): Session? {
+private fun rememberSession(
+    vm: PlayerViewModel,
+    onBack: () -> Unit,
+    onImport: () -> Unit = {},
+): Session? {
     val ui by vm.ui.collectAsStateWithLifecycle()
     val position = remember { mutableLongStateOf(vm.positionMs()) }
-    val actions = remember(vm, onBack) { Actions(vm, onBack, position) }
+    val latestImport by rememberUpdatedState(onImport)
+    val actions = remember(vm, onBack) { Actions(vm, onBack, position) { latestImport() } }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     // Polls only while visible.
     LaunchedEffect(ui?.queueIndex, ui?.title, ui?.isPlaying, lifecycle) {
         lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
             while (true) {
                 position.longValue = vm.positionMs()
-                delay(500)
+                delay(200) // fine enough to highlight lyric lines on time
             }
         }
     }
@@ -87,13 +116,24 @@ private fun rememberSession(vm: PlayerViewModel, onBack: () -> Unit): Session? {
 /** Shown above the navigation bar whenever something is queued. */
 @Composable
 fun MiniPlayer(onOpen: () -> Unit, viewModel: PlayerViewModel = hiltViewModel()) {
-    val session = rememberSession(viewModel) {} ?: return
+    val session = rememberSession(viewModel, onBack = {}) ?: return
     LocalPlayerTheme.current.MiniPlayer(session.ui, session.position, session.actions, onOpen)
 }
 
 @Composable
 fun NowPlayingScreen(onBack: () -> Unit, viewModel: PlayerViewModel = hiltViewModel()) {
-    val session = rememberSession(viewModel, onBack)
+    // Remembered across the activity being rebuilt while the file picker is open.
+    var importTarget by rememberSaveable { mutableLongStateOf(-1) }
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { file ->
+        if (file != null && importTarget >= 0) viewModel.importLyrics(importTarget, file)
+    }
+    val session = rememberSession(viewModel, onBack) {
+        viewModel.currentSongId()?.let {
+            importTarget = it
+            // LRC files have no registered type, so every file has to be offered.
+            picker.launch(arrayOf("*/*"))
+        }
+    }
     if (session == null) {
         Column(Modifier.fillMaxSize().padding(24.dp)) {
             Text(stringResource(R.string.player_nothing))
@@ -114,9 +154,37 @@ fun NowPlayingScreen(onBack: () -> Unit, viewModel: PlayerViewModel = hiltViewMo
             else -> Modifier.width(min(maxWidth, maxHeight * 0.6f)).fillMaxSize()
         }
         Box(frame) {
-            if (landscape) theme.LandscapePlayer(session.ui, session.position, session.actions)
-            else theme.PortraitPlayer(session.ui, session.position, session.actions)
+            CompositionLocalProvider(LocalAudioFeed provides viewModel.audioFeed) {
+                if (landscape) theme.LandscapePlayer(session.ui, session.position, session.actions)
+                else theme.PortraitPlayer(session.ui, session.position, session.actions)
+            }
         }
+    }
+    PlayerDialogs(session.ui, viewModel)
+}
+
+@Composable
+private fun PlayerDialogs(ui: PlayerUi, vm: PlayerViewModel) {
+    vm.draft?.let { draft ->
+        LyricsEditorDialog(draft.text, vm::changeDraft, vm::saveDraft, vm::discardDraft)
+    }
+    if (vm.removing != null) {
+        RemoveLyricsDialog(onRemove = { vm.finishRemoving(true) }, onDismiss = { vm.finishRemoving(false) })
+    }
+    if (vm.showVisualizerOptions) {
+        VisualizerDialog(ui.visualizer, vm::setVisualizer) { vm.showVisualizerOptions = false }
+    }
+    val context = LocalContext.current
+    LaunchedEffect(vm.importResult) {
+        val result = vm.importResult ?: return@LaunchedEffect
+        val message = when (result) {
+            ImportResult.IMPORTED -> ThemingR.string.lyrics_imported
+            ImportResult.EMPTY -> ThemingR.string.lyrics_import_empty
+            ImportResult.TOO_LARGE -> ThemingR.string.lyrics_import_too_large
+            ImportResult.UNREADABLE -> ThemingR.string.lyrics_import_unreadable
+        }
+        Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        vm.importResultShown()
     }
 }
 

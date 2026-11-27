@@ -2,7 +2,6 @@
 <resources>
     <string name="player_title">در حال پخش</string>
     <string name="player_queue">صف پخش</string>
-    <string name="player_close_queue">بستن صف</string>
     <string name="player_back">بازگشت</string>
     <string name="player_open">باز کردن پخش‌کننده</string>
     <string name="player_error">این فایل قابل پخش نیست.</string>
@@ -43,4 +42,48 @@
         <item quantity="one">%d آهنگ در کتابخانه</item>
         <item quantity="other">%d آهنگ در کتابخانه</item>
     </plurals>
+    <string name="player_lyrics">متن آهنگ</string>
+    <string name="player_visualizer">ویژوالایزر</string>
+    <string name="lyrics_none">برای این آهنگ هنوز متنی نیست.</string>
+    <string name="lyrics_import">وارد کردن فایل</string>
+    <string name="lyrics_write">نوشتن یا چسباندن</string>
+    <string name="lyrics_edit">ویرایش</string>
+    <string name="lyrics_remove">حذف متن</string>
+    <string name="lyrics_remove_confirm">متن ذخیره‌شدهٔ این آهنگ حذف شود؟</string>
+    <string name="lyrics_reset_timing">بازنشانی زمان‌بندی</string>
+    <string name="lyrics_options">گزینه‌های متن</string>
+    <string name="lyrics_earlier">زودتر</string>
+    <string name="lyrics_later">دیرتر</string>
+    <string name="lyrics_offset">جابه‌جایی %+.1f ثانیه</string>
+    <string name="lyrics_unsynced">این متن زمان‌بندی ندارد.</string>
+    <string name="lyrics_editor_title">متن آهنگ</string>
+    <string name="lyrics_editor_hint">متن ساده، یا خط‌های LRC مانند [00:12.50] متن</string>
+    <string name="lyrics_imported">متن وارد شد.</string>
+    <string name="lyrics_import_empty">فایل خالی است.</string>
+    <string name="lyrics_import_too_large">فایل برای متن آهنگ بیش از حد بزرگ است.</string>
+    <string name="lyrics_import_unreadable">این فایل به‌صورت متن خوانده نشد.</string>
+    <string name="action_save">ذخیره</string>
+    <string name="action_cancel">لغو</string>
+    <string name="action_close">بستن</string>
+    <string name="visualizer_options">تنظیمات ویژوالایزر</string>
+    <string name="visualizer_style">سبک</string>
+    <string name="visualizer_color">رنگ</string>
+    <string name="visualizer_intensity">شدت</string>
+    <string name="visualizer_speed">سرعت</string>
+    <string name="visualizer_sensitivity">حساسیت</string>
+    <string name="style_bars">میله‌های طیف</string>
+    <string name="style_circular">دایره‌ای</string>
+    <string name="style_waveform">شکل موج</string>
+    <string name="style_neon">موج نئونی</string>
+    <string name="style_particles">ذرات</string>
+    <string name="style_fluid">موج سیال</string>
+    <string name="style_depth">سه‌بعدی</string>
+    <string name="style_retro">نشانگر قدیمی</string>
+    <string name="style_minimal">ساده</string>
+    <string name="color_theme">رنگ تم</string>
+    <string name="color_amber">کهربایی</string>
+    <string name="color_cyan">فیروزه‌ای</string>
+    <string name="color_magenta">سرخابی</string>
+    <string name="color_green">سبز</string>
+    <string name="color_rainbow">رنگین‌کمان</string>
 </resources>
