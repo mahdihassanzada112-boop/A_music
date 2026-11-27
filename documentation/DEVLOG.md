@@ -55,7 +55,7 @@ APK signed with the Phase 2 debug key built in run 45948415501.
 
 Device check (reported by the owner, 2026-11-27): everything worked.
 
-## 2026-11-27 — Phase 4 (built; device check pending)
+## 2026-11-27 — Phase 4 (complete)
 - Lyrics: LRC and plain text, highlight and auto-scroll, tap a line to seek, import from a
   file (UTF-8, UTF-16 or Windows-1256), editor, timing shift, removal.
 - Nine visualizer styles with color, intensity, speed and sensitivity settings.
@@ -69,3 +69,5 @@ checks lyrics in both themes across rotation and that the audio tap hears a test
 Needs a real device: visualizer appearance and timing against the sound (also over
 Bluetooth), battery use, importing real LRC files, Persian lyrics and keyboard entry.
 
+
+Device check (reported by the owner, 2026-11-27): Phase 4 approved.
