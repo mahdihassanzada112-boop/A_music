@@ -1,5 +1,7 @@
 package com.amusic.app
 
+import androidx.compose.ui.test.ComposeTimeoutException
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.junit4.createEmptyComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -8,6 +10,7 @@ import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.printToString
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.amusic.core.common.OrientationMode
@@ -97,11 +100,21 @@ class LyricsVisualizerTest {
         node.performClick()
     }
 
-    private fun ComposeTestRule.waitForTag(tag: String) = waitUntil(20_000) {
+    private fun ComposeTestRule.waitForTag(tag: String) = waitFor("tag $tag") {
         onAllNodesWithTag(tag).fetchSemanticsNodes(atLeastOneRootRequired = false).size == 1
     }
 
-    private fun ComposeTestRule.waitForText(text: String) = waitUntil(20_000) {
+    private fun ComposeTestRule.waitForText(text: String) = waitFor("text $text") {
         onAllNodesWithText(text).fetchSemanticsNodes(atLeastOneRootRequired = false).isNotEmpty()
+    }
+
+    /** Says what was missing, and what was on screen instead, when a wait times out. */
+    private fun ComposeTestRule.waitFor(what: String, condition: () -> Boolean) {
+        try {
+            waitUntil(20_000, condition)
+        } catch (e: ComposeTimeoutException) {
+            val screen = runCatching { onAllNodes(isRoot()).printToString(maxDepth = 30) }.getOrDefault("?")
+            throw AssertionError("No $what. On screen:\n$screen", e)
+        }
     }
 }
