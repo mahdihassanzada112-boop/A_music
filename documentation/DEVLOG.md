@@ -33,7 +33,7 @@ library, and the screens in both languages.
 
 Device check (reported by the owner, 2026-11-26): everything worked.
 
-## 2026-11-27 — Phase 3 (built; device check pending)
+## 2026-11-27 — Phase 3 (complete)
 Written: theme contract, Dark Modern and Glass UI (navigation, mini player, home, portrait
 and landscape players), theme gallery with live previews, saved selection, reset, and
 Auto / Portrait / Landscape orientation with a switch button on the player.
@@ -50,3 +50,7 @@ device test (it paused before the second song had started).
 
 Needs a real device: appearance of both themes in both languages and light/dark, theme
 gallery previews, landscape on small and large screens, and Auto rotation.
+
+APK signed with the Phase 2 debug key built in run 45948415501.
+
+Device check (reported by the owner, 2026-11-27): everything worked.
