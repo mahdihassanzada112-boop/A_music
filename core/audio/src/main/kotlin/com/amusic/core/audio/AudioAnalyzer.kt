@@ -20,7 +20,7 @@ import javax.inject.Singleton
  */
 @Singleton
 @OptIn(UnstableApi::class)
-class AudioAnalyzer @Inject constructor() : AudioFeed, TeeAudioProcessor.AudioBufferSink {
+class AudioAnalyzer @Inject constructor() : AudioFeed {
     private val watchers = AtomicInteger()
     private val queue = PlayoutQueue<AudioFrame>()
 
@@ -58,7 +58,15 @@ class AudioAnalyzer @Inject constructor() : AudioFeed, TeeAudioProcessor.AudioBu
         speed = value.coerceAtLeast(0.1f)
     }
 
-    override fun flush(sampleRateHz: Int, channelCount: Int, encoding: Int) {
+    /** What the player's audio tap writes to. A member, so Media3 types stay inside this module. */
+    internal val sink = object : TeeAudioProcessor.AudioBufferSink {
+        override fun flush(sampleRateHz: Int, channelCount: Int, encoding: Int) =
+            configure(sampleRateHz, channelCount, encoding)
+
+        override fun handleBuffer(buffer: ByteBuffer) = consume(buffer)
+    }
+
+    private fun configure(sampleRateHz: Int, channelCount: Int, encoding: Int) {
         sampleRate = sampleRateHz
         channels = channelCount
         this.encoding = encoding
@@ -67,7 +75,7 @@ class AudioAnalyzer @Inject constructor() : AudioFeed, TeeAudioProcessor.AudioBu
         queue.clear()
     }
 
-    override fun handleBuffer(buffer: ByteBuffer) {
+    private fun consume(buffer: ByteBuffer) {
         val analyzer = analyzer ?: return
         if (watchers.get() == 0 || channels <= 0) {
             filled = 0

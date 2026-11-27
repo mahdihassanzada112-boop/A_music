@@ -32,7 +32,7 @@ jobs:
       - name: Test counts and Room schema
         run: |
           grep -ho 'testsuite name="[^"]*" tests="[0-9]*" skipped="[0-9]*" failures="[0-9]*" errors="[0-9]*"' $(find . -path '*/build/test-results/*' -name '*.xml')
-          cat core/database/schemas/*/2.json
+          cat core/database/schemas/*/3.json
       - uses: actions/upload-artifact@v6
         with:
           name: A-Music-debug-apk

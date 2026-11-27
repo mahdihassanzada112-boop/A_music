@@ -116,7 +116,7 @@ class PlaybackService : MediaSessionService() {
         ): AudioSink = DefaultAudioSink.Builder(context)
             .setEnableFloatOutput(enableFloatOutput)
             .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-            .setAudioProcessors(arrayOf(TeeAudioProcessor(analyzer)))
+            .setAudioProcessors(arrayOf(TeeAudioProcessor(analyzer.sink)))
             .build()
     }
 
