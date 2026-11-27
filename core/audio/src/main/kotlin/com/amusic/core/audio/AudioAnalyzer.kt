@@ -16,7 +16,8 @@ import javax.inject.Singleton
 
 /**
  * Listens to a copy of the decoded audio on its way to the speakers. It never touches the
- * microphone, leaves the audio unchanged and does no work while nothing is watching.
+ * microphone and leaves the audio unchanged. The spectrum is computed only while something is
+ * watching; otherwise just the timing is tracked, so a visualizer opened mid-song is in step.
  */
 @Singleton
 @OptIn(UnstableApi::class)
@@ -36,7 +37,7 @@ class AudioAnalyzer @Inject constructor() : AudioFeed {
     private var filled = 0
 
     override fun watch(): AutoCloseable {
-        if (watchers.getAndIncrement() == 0) queue.clear()
+        watchers.incrementAndGet()
         var open = true
         return AutoCloseable {
             if (open) {
@@ -77,10 +78,8 @@ class AudioAnalyzer @Inject constructor() : AudioFeed {
 
     private fun consume(buffer: ByteBuffer) {
         val analyzer = analyzer ?: return
-        if (watchers.get() == 0 || channels <= 0) {
-            filled = 0
-            return
-        }
+        if (channels <= 0) return
+        val watched = watchers.get() > 0
         val bytes = when (encoding) {
             C.ENCODING_PCM_16BIT -> 2
             C.ENCODING_PCM_FLOAT -> 4
@@ -89,15 +88,20 @@ class AudioAnalyzer @Inject constructor() : AudioFeed {
         val data = buffer.asReadOnlyBuffer().order(ByteOrder.nativeOrder())
         while (data.remaining() >= bytes * channels) {
             var sum = 0f
-            repeat(channels) {
-                sum += if (bytes == 2) data.short / 32_768f else data.float
+            if (watched) {
+                repeat(channels) {
+                    sum += if (bytes == 2) data.short / 32_768f else data.float
+                }
+            } else {
+                data.position(data.position() + bytes * channels)
             }
             block[filled++] = sum / channels
             if (filled == block.size) {
                 filled = 0
                 // Faster playback means each block is heard for a shorter time.
                 val duration = (block.size * 1_000_000L / sampleRate / speed).toLong()
-                queue.add(analyzer.analyze(block), duration, now())
+                val frame = if (watched) analyzer.analyze(block) else AudioFrame.SILENCE
+                queue.add(frame, duration, now())
             }
         }
     }
