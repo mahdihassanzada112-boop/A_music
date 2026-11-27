@@ -34,4 +34,5 @@ dependencies {
     implementation(project(":core:database"))
     implementation(project(":core:audio"))
     implementation(project(":data"))
+    implementation(project(":core:theming"))
 }

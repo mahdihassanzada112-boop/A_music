@@ -2,6 +2,7 @@ package com.amusic.app
 
 import com.amusic.core.audio.PlayerController
 import com.amusic.core.storage.PlaybackStateStore
+import com.amusic.core.storage.SettingsRepository
 import com.amusic.data.LibraryRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
@@ -14,4 +15,5 @@ interface TestAccess {
     fun library(): LibraryRepository
     fun player(): PlayerController
     fun playbackStore(): PlaybackStateStore
+    fun settings(): SettingsRepository
 }

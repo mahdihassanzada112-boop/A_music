@@ -19,6 +19,8 @@ class MainViewModel @Inject constructor(
     /** null until the stored preference has been read, to avoid a theme flash. */
     val themeMode = settings.themeMode.stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
+    val themeId = settings.themeId.stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     fun onLibraryAccess() {
         library.start()
         player.connect()

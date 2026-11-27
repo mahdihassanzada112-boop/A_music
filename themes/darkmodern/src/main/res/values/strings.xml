@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_dark_modern">Dark Modern</string>
+    <string name="theme_dark_modern_description">Solid surfaces, amber accent, queue beside the controls.</string>
+</resources>

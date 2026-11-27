@@ -32,3 +32,11 @@ and headphone events, audio interruptions, restore after restart, sleep timer, a
 library, and the screens in both languages.
 
 Device check (reported by the owner, 2026-11-26): everything worked.
+
+## 2026-11-26 — Phase 3 (in progress)
+Written: theme contract, Dark Modern and Glass UI (navigation, mini player, home, portrait
+and landscape players), theme gallery with live previews, saved selection, reset, and
+Auto / Portrait / Landscape orientation with a switch button on the player.
+
+Not included yet: lyrics and visualizers (Phase 4), configurable backgrounds (Phase 5),
+landscape customization and equalizer (Phase 6), the other eight themes (Phase 7).

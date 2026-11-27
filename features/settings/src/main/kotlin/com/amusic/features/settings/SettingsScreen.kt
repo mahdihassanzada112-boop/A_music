@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -26,12 +27,13 @@ import com.amusic.core.common.ThemeMode
 import com.amusic.core.design.ScreenScaffold
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(onOpenThemes: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
     val mode by viewModel.themeMode.collectAsStateWithLifecycle()
     // An empty tag means "follow the system language".
     val language = AppCompatDelegate.getApplicationLocales()[0]?.language.orEmpty()
 
     ScreenScaffold(stringResource(R.string.settings_title)) {
+        Button(onClick = onOpenThemes) { Text(stringResource(R.string.themes_title)) }
         ChoiceGroup(
             title = stringResource(R.string.settings_appearance),
             options = listOf(
@@ -58,7 +60,7 @@ fun SettingsScreen(viewModel: SettingsViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun <T> ChoiceGroup(
+internal fun <T> ChoiceGroup(
     title: String,
     options: List<Pair<T, String>>,
     selected: T,

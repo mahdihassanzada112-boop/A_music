@@ -6,4 +6,11 @@
     <string name="settings_follow_system">مطابق سیستم</string>
     <string name="settings_light">روشن</string>
     <string name="settings_dark">تیره</string>
+    <string name="themes_title">تم‌ها</string>
+    <string name="theme_use">استفاده از این تم</string>
+    <string name="theme_in_use">در حال استفاده</string>
+    <string name="settings_orientation">جهت پخش‌کننده</string>
+    <string name="themes_reset">بازگردانی تنظیمات پیش‌فرض تم</string>
+    <string name="preview_song">آهنگ نمونه</string>
+    <string name="preview_artist">هنرمند نمونه</string>
 </resources>

@@ -12,7 +12,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.amusic.core.common.ThemeMode
-import com.amusic.core.design.AMusicTheme
+import com.amusic.core.theming.ApplyTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -23,7 +23,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val mode by viewModel.themeMode.collectAsStateWithLifecycle()
+            val themeId by viewModel.themeId.collectAsStateWithLifecycle()
             val current = mode ?: return@setContent
+            val theme = themeId?.let(::themeFor) ?: return@setContent
             val dark = when (current) {
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
                 ThemeMode.LIGHT -> false
@@ -34,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
                 onDispose {}
             }
-            AMusicTheme(dark) { AMusicApp(viewModel::onLibraryAccess) }
+            ApplyTheme(theme, dark) { AMusicApp(viewModel::onLibraryAccess) }
         }
     }
 }

@@ -14,8 +14,8 @@ android {
         applicationId = "com.amusic.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resValue("string", "app_name", providers.gradleProperty("APP_NAME").get())
     }
@@ -47,6 +47,9 @@ dependencies {
     implementation(project(":features:player"))
     implementation(project(":core:audio"))
     implementation(project(":data"))
+    implementation(project(":core:theming"))
+    implementation(project(":themes:darkmodern"))
+    implementation(project(":themes:glass"))
 
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
@@ -65,6 +68,9 @@ dependencies {
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
 
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    debugImplementation(libs.compose.ui.test.manifest)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.androidx.test.runner)

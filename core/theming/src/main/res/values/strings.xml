@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="player_title">Now playing</string>
+    <string name="player_queue">Queue</string>
+    <string name="player_close_queue">Close queue</string>
+    <string name="player_back">Back</string>
+    <string name="player_open">Open player</string>
+    <string name="player_error">This file could not be played.</string>
+    <string name="player_play">Play</string>
+    <string name="player_pause">Pause</string>
+    <string name="player_next">Next</string>
+    <string name="player_previous">Previous</string>
+    <string name="player_shuffle">Shuffle</string>
+    <string name="player_repeat">Repeat</string>
+    <string name="player_favorite">Add to favorites</string>
+    <string name="player_unfavorite">Remove from favorites</string>
+    <string name="player_speed">Speed %s</string>
+    <string name="player_more">More options</string>
+    <string name="state_on">On</string>
+    <string name="state_off">Off</string>
+    <string name="repeat_all">All</string>
+    <string name="repeat_one">One</string>
+    <string name="sleep_timer">Sleep timer</string>
+    <string name="sleep_left">Sleep in %d min</string>
+    <string name="sleep_minutes">%d minutes</string>
+    <string name="queue_up">Move up</string>
+    <string name="queue_down">Move down</string>
+    <string name="queue_remove">Remove</string>
+    <string name="queue_clear">Clear queue</string>
+    <string name="orientation_switch">Switch layout orientation</string>
+    <string name="orientation_auto">Auto</string>
+    <string name="orientation_portrait">Portrait</string>
+    <string name="orientation_landscape">Landscape</string>
+    <string name="home_title">Home</string>
+    <string name="home_scanning">Scanning your music…</string>
+    <string name="home_scan_failed">Scanning failed. Try again.</string>
+    <string name="home_empty">No music found on this device.</string>
+    <string name="home_shuffle_all">Shuffle all</string>
+    <string name="home_rescan">Rescan</string>
+    <string name="home_recently_played">Recently played</string>
+    <string name="home_recently_added">Recently added</string>
+    <plurals name="home_song_count">
+        <item quantity="one">%d song in your library</item>
+        <item quantity="other">%d songs in your library</item>
+    </plurals>
+</resources>

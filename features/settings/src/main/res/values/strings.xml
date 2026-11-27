@@ -6,4 +6,11 @@
     <string name="settings_follow_system">System default</string>
     <string name="settings_light">Light</string>
     <string name="settings_dark">Dark</string>
+    <string name="themes_title">Themes</string>
+    <string name="theme_use">Use this theme</string>
+    <string name="theme_in_use">In use</string>
+    <string name="settings_orientation">Player orientation</string>
+    <string name="themes_reset">Restore default theme settings</string>
+    <string name="preview_song">Sample song</string>
+    <string name="preview_artist">Sample artist</string>
 </resources>

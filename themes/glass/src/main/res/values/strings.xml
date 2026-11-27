@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theme_glass">Glass UI</string>
+    <string name="theme_glass_description">Frosted panels over soft colour, with a turning disc.</string>
+</resources>
