@@ -33,10 +33,20 @@ library, and the screens in both languages.
 
 Device check (reported by the owner, 2026-11-26): everything worked.
 
-## 2026-11-26 — Phase 3 (in progress)
+## 2026-11-27 — Phase 3 (built; device check pending)
 Written: theme contract, Dark Modern and Glass UI (navigation, mini player, home, portrait
 and landscape players), theme gallery with live previews, saved selection, reset, and
 Auto / Portrait / Landscape orientation with a switch button on the player.
 
 Not included yet: lyrics and visualizers (Phase 4), configurable backgrounds (Phase 5),
 landscape customization and equalizer (Phase 6), the other eight themes (Phase 7).
+
+Verified on GitHub Actions (run 45947049306): 24 unit/Robolectric tests, lintDebug,
+assembleDebug, and two emulator tests on API 28 and 34. The new one opens both themes'
+players, switches portrait/landscape and checks that the same queue keeps playing.
+
+Fixed during verification: a type error in the sleep-timer flow, and a race in the playback
+device test (it paused before the second song had started).
+
+Needs a real device: appearance of both themes in both languages and light/dark, theme
+gallery previews, landscape on small and large screens, and Auto rotation.
