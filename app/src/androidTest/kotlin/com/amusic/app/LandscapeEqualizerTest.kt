@@ -66,8 +66,10 @@ class LandscapeEqualizerTest {
                     compose.waitForNoTag("custom_landscape")
 
                     // From the landscape player to the editor.
-                    compose.onNodeWithText(text(ThemingR.string.orientation_landscape))
-                        .performScrollTo().performClick()
+                    val menu = compose.onNodeWithText(text(ThemingR.string.orientation_landscape))
+                    // Only some themes keep this button in a scrolling column.
+                    runCatching { menu.performScrollTo() }
+                    menu.performClick()
                     compose.onNodeWithText(text(ThemingR.string.layout_customize)).performClick()
                     compose.waitForTag("layout_editor")
                     compose.onNodeWithText(text(CustomizeR.string.layout_three_columns))
