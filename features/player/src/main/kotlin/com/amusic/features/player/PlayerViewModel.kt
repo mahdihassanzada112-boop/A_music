@@ -58,6 +58,10 @@ class PlayerViewModel @Inject constructor(
 ) : ViewModel() {
     val audioFeed: AudioFeed = analyzer
 
+    /** null until read, so the player does not flash the wrong background. */
+    val background = settings.background
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
     var draft by mutableStateOf<LyricsDraft?>(null)
         private set
 

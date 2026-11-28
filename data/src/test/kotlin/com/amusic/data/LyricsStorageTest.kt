@@ -6,6 +6,8 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.amusic.core.database.AMusicDatabase
 import com.amusic.core.database.MIGRATION_2_3
+import com.amusic.core.database.MIGRATION_3_4
+import com.amusic.core.common.BuiltInPreset
 import java.io.File
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -44,10 +46,10 @@ class LyricsStorageTest {
         }
     }
 
-    @Test fun upgradeKeepsUserDataAndAddsLyrics() = runBlocking {
+    @Test fun upgradeKeepsUserDataAndAddsLyricsAndPresets() = runBlocking {
         createVersion2("upgrade.db")
         val db = Room.databaseBuilder(context, AMusicDatabase::class.java, "upgrade.db")
-            .addMigrations(MIGRATION_2_3)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
             .allowMainThreadQueries()
             .build()
         try {
@@ -63,6 +65,15 @@ class LyricsStorageTest {
             assertEquals(0L, lyrics.observe(7).first()!!.offsetMs)
             lyrics.save(7, "  ")
             assertNull(lyrics.observe(7).first())
+
+            val presets = PresetRepository(db.presetDao())
+            presets.save("  ", BuiltInPreset.CONCERT.scene)
+            presets.save(" Stage ", BuiltInPreset.CONCERT.scene)
+            val saved = presets.presets.first().single()
+            assertEquals("Stage", saved.name)
+            assertEquals(BuiltInPreset.CONCERT.scene, saved.scene)
+            presets.delete(saved.id)
+            assertEquals(emptyList<BackgroundPreset>(), presets.presets.first())
         } finally {
             db.close()
         }

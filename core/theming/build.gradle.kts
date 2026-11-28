@@ -30,4 +30,5 @@ dependencies {
     api(libs.compose.material3)
     api(project(":core:common"))
     api(project(":core:design"))
+    testImplementation(libs.junit)
 }

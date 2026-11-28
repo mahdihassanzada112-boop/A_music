@@ -53,6 +53,7 @@ import com.amusic.core.theming.QueuePanel
 import com.amusic.core.theming.RepeatButton
 import com.amusic.core.theming.SeekBar
 import com.amusic.core.theming.ShuffleButton
+import com.amusic.core.theming.StudioButton
 import com.amusic.core.theming.SleepMenu
 import com.amusic.core.theming.SpeedMenu
 import com.amusic.core.theming.R as ThemingR
@@ -99,6 +100,7 @@ internal fun DarkPortraitPlayer(ui: PlayerUi, position: Position, actions: Playe
             QueueButton(ui, actions, accent)
             LyricsButton(ui, actions, accent)
             VisualizerButton(ui, actions, accent, stageVisible = ui.panel == PlayerPanel.NONE)
+            StudioButton(actions)
         }
     }
 }
@@ -143,6 +145,7 @@ internal fun DarkLandscapePlayer(ui: PlayerUi, position: Position, actions: Play
                         ui, actions, accent,
                         stageVisible = threeColumns || ui.panel == PlayerPanel.NONE,
                     )
+                    StudioButton(actions)
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     SpeedMenu(ui, actions)

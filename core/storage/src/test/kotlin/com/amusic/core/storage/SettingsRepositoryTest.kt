@@ -1,6 +1,9 @@
 package com.amusic.core.storage
 
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import com.amusic.core.common.AutoBackground
+import com.amusic.core.common.BackgroundSettings
+import com.amusic.core.common.BuiltInPreset
 import com.amusic.core.common.OrientationMode
 import com.amusic.core.common.ThemeId
 import com.amusic.core.common.ThemeMode
@@ -60,5 +63,23 @@ class SettingsRepositoryTest {
             VisualizerSettings(true, VisualizerStyle.RETRO, VisualizerColor.CYAN, 1.5f, 0.7f, 0.5f),
             repository.visualizer.first(),
         )
+    }
+
+    @Test
+    fun backgroundPersistsAndKeepsEveryQuickChange() = runTest {
+        val store = PreferenceDataStoreFactory.create(scope = backgroundScope) {
+            folder.root.resolve("background.preferences_pb")
+        }
+        val repository = SettingsRepository(store)
+        assertEquals(BackgroundSettings(), repository.background.first())
+        repository.updateBackground { it.copy(enabled = true, fpsLimit = 45) }
+        repository.updateBackground { it.copy(scene = BuiltInPreset.CONCERT.scene) }
+        repository.updateBackground { it.copy(auto = AutoBackground.SHUFFLE, batterySaver = true) }
+        assertEquals(
+            BackgroundSettings(true, BuiltInPreset.CONCERT.scene, AutoBackground.SHUFFLE, true, 45),
+            repository.background.first(),
+        )
+        repository.updateBackground { it.copy(fpsLimit = 1_000) }
+        assertEquals(BackgroundSettings.DEFAULT_FPS, repository.background.first().fpsLimit)
     }
 }

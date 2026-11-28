@@ -33,6 +33,7 @@ dependencies {
     implementation(project(":core:theming"))
     implementation(project(":core:storage"))
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel)
     implementation(libs.hilt.viewmodel.compose)

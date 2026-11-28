@@ -6,7 +6,12 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.amusic.core.common.AutoBackground
+import com.amusic.core.common.BackgroundCodec
+import com.amusic.core.common.BackgroundScene
+import com.amusic.core.common.BackgroundSettings
 import com.amusic.core.common.OrientationMode
 import com.amusic.core.common.SortOrder
 import com.amusic.core.common.ThemeId
@@ -94,7 +99,38 @@ class SettingsRepository @Inject constructor(private val store: DataStore<Prefer
         }
     }
 
+    val background: Flow<BackgroundSettings> = store.data
+        .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+        .map { it.toBackground() }
+        .distinctUntilChanged()
+
+    /** Changes the stored value in one step, so quick successive edits never undo each other. */
+    suspend fun updateBackground(change: (BackgroundSettings) -> BackgroundSettings) {
+        store.edit {
+            val new = change(it.toBackground())
+            it[BACKGROUND_ENABLED] = new.enabled
+            it[BACKGROUND_SCENE] = BackgroundCodec.encode(new.scene)
+            it[BACKGROUND_AUTO] = new.auto.name
+            it[BATTERY_SAVER] = new.batterySaver
+            it[BACKGROUND_FPS] = new.fpsLimit
+        }
+    }
+
+    private fun Preferences.toBackground() = BackgroundSettings(
+        enabled = this[BACKGROUND_ENABLED] ?: false,
+        scene = BackgroundCodec.decode(this[BACKGROUND_SCENE]) ?: BackgroundScene.Default,
+        auto = AutoBackground.fromName(this[BACKGROUND_AUTO]),
+        batterySaver = this[BATTERY_SAVER] ?: false,
+        fpsLimit = this[BACKGROUND_FPS]?.takeIf { it in BackgroundSettings.FPS_CHOICES }
+            ?: BackgroundSettings.DEFAULT_FPS,
+    )
+
     private companion object {
+        val BACKGROUND_ENABLED = booleanPreferencesKey("background_enabled")
+        val BACKGROUND_SCENE = stringPreferencesKey("background_scene")
+        val BACKGROUND_AUTO = stringPreferencesKey("background_auto")
+        val BATTERY_SAVER = booleanPreferencesKey("battery_saver")
+        val BACKGROUND_FPS = intPreferencesKey("background_fps")
         val VISUALIZER_ENABLED = booleanPreferencesKey("visualizer_enabled")
         val VISUALIZER_STYLE = stringPreferencesKey("visualizer_style")
         val VISUALIZER_COLOR = stringPreferencesKey("visualizer_color")

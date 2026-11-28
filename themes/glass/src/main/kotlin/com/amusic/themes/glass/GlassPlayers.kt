@@ -62,6 +62,7 @@ import com.amusic.core.theming.QueuePanel
 import com.amusic.core.theming.RepeatButton
 import com.amusic.core.theming.SeekBar
 import com.amusic.core.theming.ShuffleButton
+import com.amusic.core.theming.StudioButton
 import com.amusic.core.theming.SleepMenu
 import com.amusic.core.theming.SpeedMenu
 import com.amusic.core.theming.R as ThemingR
@@ -73,6 +74,7 @@ internal fun GlassPortraitPlayer(ui: PlayerUi, position: Position, actions: Play
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             BackButton(actions)
             Box(Modifier.weight(1f))
+            StudioButton(actions)
             OrientationControls(ui, actions, isLandscape = false)
         }
         when (ui.panel) {
@@ -151,6 +153,7 @@ internal fun GlassLandscapePlayer(ui: PlayerUi, position: Position, actions: Pla
                             if (!sidePane) QueueButton(ui, actions, accent)
                             LyricsButton(ui, actions, accent)
                             VisualizerButton(ui, actions, accent, stageVisible)
+                            StudioButton(actions)
                         }
                         OrientationControls(ui, actions, isLandscape = true)
                     }

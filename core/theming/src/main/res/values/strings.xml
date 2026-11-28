@@ -86,4 +86,5 @@
     <string name="color_magenta">Magenta</string>
     <string name="color_green">Green</string>
     <string name="color_rainbow">Rainbow</string>
+    <string name="player_studio">Background Studio</string>
 </resources>

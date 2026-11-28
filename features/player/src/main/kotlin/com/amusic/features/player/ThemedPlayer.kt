@@ -15,6 +15,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
+import com.amusic.core.theming.LocalDarkTheme
+import com.amusic.core.theming.ApplyTheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -57,6 +61,7 @@ private class Actions(
     private val onBack: () -> Unit,
     private val position: androidx.compose.runtime.MutableLongState,
     private val onImport: () -> Unit,
+    private val onStudio: () -> Unit,
 ) : PlayerActions {
     override fun back() = onBack()
     override fun togglePlay() = vm.togglePlay()
@@ -81,6 +86,7 @@ private class Actions(
     override fun openVisualizerOptions() {
         vm.showVisualizerOptions = true
     }
+    override fun openBackgroundStudio() = onStudio()
     override fun importLyrics() = onImport()
     override fun editLyrics() = vm.editLyrics()
     override fun removeLyrics() = vm.askToRemoveLyrics()
@@ -95,11 +101,15 @@ private fun rememberSession(
     vm: PlayerViewModel,
     onBack: () -> Unit,
     onImport: () -> Unit = {},
+    onStudio: () -> Unit = {},
 ): Session? {
     val ui by vm.ui.collectAsStateWithLifecycle()
     val position = remember { mutableLongStateOf(vm.positionMs()) }
     val latestImport by rememberUpdatedState(onImport)
-    val actions = remember(vm, onBack) { Actions(vm, onBack, position) { latestImport() } }
+    val latestStudio by rememberUpdatedState(onStudio)
+    val actions = remember(vm, onBack) {
+        Actions(vm, onBack, position, { latestImport() }, { latestStudio() })
+    }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     // Polls only while visible.
     LaunchedEffect(ui?.queueIndex, ui?.title, ui?.isPlaying, lifecycle) {
@@ -121,19 +131,25 @@ fun MiniPlayer(onOpen: () -> Unit, viewModel: PlayerViewModel = hiltViewModel())
 }
 
 @Composable
-fun NowPlayingScreen(onBack: () -> Unit, viewModel: PlayerViewModel = hiltViewModel()) {
+fun NowPlayingScreen(
+    onBack: () -> Unit,
+    onOpenStudio: () -> Unit,
+    viewModel: PlayerViewModel = hiltViewModel(),
+) {
     // Remembered across the activity being rebuilt while the file picker is open.
     var importTarget by rememberSaveable { mutableLongStateOf(-1) }
     val picker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { file ->
         if (file != null && importTarget >= 0) viewModel.importLyrics(importTarget, file)
     }
-    val session = rememberSession(viewModel, onBack) {
+    val pickFile = {
         viewModel.currentSongId()?.let {
             importTarget = it
             // LRC files have no registered type, so every file has to be offered.
             picker.launch(arrayOf("*/*"))
         }
+        Unit
     }
+    val session = rememberSession(viewModel, onBack, pickFile, onOpenStudio)
     if (session == null) {
         Column(Modifier.fillMaxSize().padding(24.dp)) {
             Text(stringResource(R.string.player_nothing))
@@ -144,6 +160,11 @@ fun NowPlayingScreen(onBack: () -> Unit, viewModel: PlayerViewModel = hiltViewMo
     val mode = session.ui.orientationMode
     LockOrientation(mode)
     val theme = LocalPlayerTheme.current
+    val background by viewModel.background.collectAsStateWithLifecycle()
+    // Studio backgrounds are dark, so the player on top of them uses the dark colors.
+    val dark = background?.enabled == true || LocalDarkTheme.current
+    ApplyTheme(theme, dark) {
+    CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onBackground) {
     BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         val wide = maxWidth > maxHeight
         val landscape = mode.usesLandscape(wide)
@@ -161,6 +182,8 @@ fun NowPlayingScreen(onBack: () -> Unit, viewModel: PlayerViewModel = hiltViewMo
         }
     }
     PlayerDialogs(session.ui, viewModel)
+    }
+    }
 }
 
 @Composable

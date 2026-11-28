@@ -43,3 +43,18 @@ A theme implements `PlayerTheme` and sees only `PlayerUi`, `PlayerActions`, `Hom
 `HomeActions`, never the engine, so switching themes cannot affect playback. Library, search,
 playlists and settings share one implementation styled by the theme's colors, type, shapes
 and background. To add a theme: new module, new `ThemeId`, one line in `app/Themes.kt`.
+
+## Background Studio
+- A `BackgroundScene` (core/common) is up to six layers, one per style, plus shared settings
+  and a palette. It is stored as one line of text (`BackgroundCodec`), which skips anything
+  it does not know.
+- `BackgroundStage` (core/theming) draws a scene on a Compose canvas. Nothing in it knows
+  about the player beyond the cover, a running flag and the `AudioFeed`.
+- A new style needs an entry in `BackgroundStyle`, a drawing function in
+  `BackgroundDrawing.kt` and a name in the studio's strings.
+- Frames are drawn only while the screen is visible, up to the chosen limit; low-memory
+  devices, battery saver and the system power saver lower detail and frame rate. The loop
+  stops once paused music has faded out, and still layers need no loop at all.
+- Blur is computed once per cover on a small copy, so it works the same from Android 8.
+- Saved presets are in the database (version 4). Changing background with the song happens
+  in `MainViewModel`.

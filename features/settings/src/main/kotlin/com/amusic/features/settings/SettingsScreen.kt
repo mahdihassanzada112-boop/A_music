@@ -25,15 +25,21 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.amusic.core.common.ThemeMode
 import com.amusic.core.design.ScreenScaffold
+import com.amusic.core.theming.R as ThemingR
 
 @Composable
-fun SettingsScreen(onOpenThemes: () -> Unit, viewModel: SettingsViewModel = hiltViewModel()) {
+fun SettingsScreen(
+    onOpenThemes: () -> Unit,
+    onOpenStudio: () -> Unit,
+    viewModel: SettingsViewModel = hiltViewModel(),
+) {
     val mode by viewModel.themeMode.collectAsStateWithLifecycle()
     // An empty tag means "follow the system language".
     val language = AppCompatDelegate.getApplicationLocales()[0]?.language.orEmpty()
 
     ScreenScaffold(stringResource(R.string.settings_title)) {
         Button(onClick = onOpenThemes) { Text(stringResource(R.string.themes_title)) }
+        Button(onClick = onOpenStudio) { Text(stringResource(ThemingR.string.player_studio)) }
         ChoiceGroup(
             title = stringResource(R.string.settings_appearance),
             options = listOf(

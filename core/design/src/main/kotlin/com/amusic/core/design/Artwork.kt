@@ -65,6 +65,10 @@ fun Artwork(uri: Uri?, modifier: Modifier = Modifier) {
     }
 }
 
+/** The cover for an album-art URI at about [pixels] wide, or null when there is none. */
+suspend fun loadArtwork(context: Context, uri: Uri, pixels: Int): Bitmap? =
+    withContext(Dispatchers.IO) { load(context, uri, pixels) }
+
 private fun load(context: Context, uri: Uri, pixels: Int): Bitmap? = runCatching {
     if (Build.VERSION.SDK_INT >= 29) {
         val albums = android.provider.MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI

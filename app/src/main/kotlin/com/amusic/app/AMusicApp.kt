@@ -32,11 +32,14 @@ import com.amusic.features.home.HomeScreen
 import com.amusic.features.library.LibraryScreen
 import com.amusic.features.player.MiniPlayer
 import com.amusic.features.player.NowPlayingScreen
+import com.amusic.features.player.PlayerBackdrop
 import com.amusic.features.settings.SettingsScreen
 import com.amusic.features.settings.ThemesScreen
+import com.amusic.features.studio.StudioScreen
 
 private const val PLAYER_ROUTE = "player"
 private const val THEMES_ROUTE = "themes"
+private const val STUDIO_ROUTE = "studio"
 
 private enum class Destination(val route: String, @param:StringRes val label: Int, val icon: ImageVector) {
     HOME("home", R.string.nav_home, Icons.Filled.Home),
@@ -58,12 +61,13 @@ fun AMusicApp(onLibraryAccess: () -> Unit) {
 
     Box(Modifier.fillMaxSize()) {
     theme.Background(Modifier.fillMaxSize())
+    if (entry?.destination?.route == PLAYER_ROUTE) PlayerBackdrop()
     Scaffold(
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onBackground,
         contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
-            if (entry?.destination?.route != PLAYER_ROUTE) {
+            if (entry?.destination?.route !in listOf(PLAYER_ROUTE, STUDIO_ROUTE)) {
                 Column {
                     MiniPlayer(onOpen = {
                         navController.navigate(PLAYER_ROUTE) { launchSingleTop = true }
@@ -90,13 +94,22 @@ fun AMusicApp(onLibraryAccess: () -> Unit) {
                     LibraryAccessGate(onLibraryAccess) { LibraryScreen() }
                 }
                 composable(Destination.SETTINGS.route) {
-                    SettingsScreen(onOpenThemes = { navController.navigate(THEMES_ROUTE) })
+                    SettingsScreen(
+                        onOpenThemes = { navController.navigate(THEMES_ROUTE) },
+                        onOpenStudio = { navController.navigate(STUDIO_ROUTE) },
+                    )
                 }
                 composable(THEMES_ROUTE) {
                     ThemesScreen(PlayerThemes, onBack = { navController.popBackStack() })
                 }
                 composable(PLAYER_ROUTE) {
-                    NowPlayingScreen(onBack = { navController.popBackStack() })
+                    NowPlayingScreen(
+                        onBack = { navController.popBackStack() },
+                        onOpenStudio = { navController.navigate(STUDIO_ROUTE) { launchSingleTop = true } },
+                    )
+                }
+                composable(STUDIO_ROUTE) {
+                    StudioScreen(onBack = { navController.popBackStack() })
                 }
             }
         }

@@ -102,6 +102,7 @@ private object NoActions : PlayerActions {
     override fun showPanel(panel: PlayerPanel) = Unit
     override fun setVisualizer(settings: VisualizerSettings) = Unit
     override fun openVisualizerOptions() = Unit
+    override fun openBackgroundStudio() = Unit
     override fun importLyrics() = Unit
     override fun editLyrics() = Unit
     override fun removeLyrics() = Unit

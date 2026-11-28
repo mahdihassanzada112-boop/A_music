@@ -14,8 +14,8 @@ android {
         applicationId = "com.amusic.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "0.4.0"
+        versionCode = 5
+        versionName = "0.5.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         resValue("string", "app_name", providers.gradleProperty("APP_NAME").get())
     }
@@ -45,6 +45,7 @@ dependencies {
     implementation(project(":features:library"))
     implementation(project(":features:settings"))
     implementation(project(":features:player"))
+    implementation(project(":features:studio"))
     implementation(project(":core:audio"))
     implementation(project(":data"))
     implementation(project(":core:theming"))

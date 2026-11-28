@@ -12,3 +12,13 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         )
     }
 }
+
+/** Adds saved background presets. */
+val MIGRATION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `background_presets` " +
+                "(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `scene` TEXT NOT NULL)",
+        )
+    }
+}

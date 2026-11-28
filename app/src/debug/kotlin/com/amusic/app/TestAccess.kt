@@ -6,6 +6,7 @@ import com.amusic.core.storage.PlaybackStateStore
 import com.amusic.core.storage.SettingsRepository
 import com.amusic.data.LibraryRepository
 import com.amusic.data.LyricsRepository
+import com.amusic.data.PresetRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -20,4 +21,5 @@ interface TestAccess {
     fun settings(): SettingsRepository
     fun lyrics(): LyricsRepository
     fun analyzer(): AudioAnalyzer
+    fun presets(): PresetRepository
 }

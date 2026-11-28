@@ -44,6 +44,12 @@ private fun PanelToggle(
     ToggleIcon(icon, label, on, active) { actions.showPanel(if (on) PlayerPanel.NONE else panel) }
 }
 
+/** Opens the Background Studio. */
+@Composable
+fun StudioButton(actions: PlayerActions) = IconButton(actions::openBackgroundStudio) {
+    Icon(painterResource(R.drawable.ic_studio), stringResource(R.string.player_studio))
+}
+
 /**
  * Swaps the artwork for the visualizer. When a panel covers that area ([stageVisible] is
  * false), the button closes the panel and shows the visualizer.

@@ -66,6 +66,7 @@ interface PlayerActions {
     fun showPanel(panel: PlayerPanel)
     fun setVisualizer(settings: VisualizerSettings)
     fun openVisualizerOptions()
+    fun openBackgroundStudio()
     fun importLyrics()
     fun editLyrics()
     /** Asks for confirmation first. */
