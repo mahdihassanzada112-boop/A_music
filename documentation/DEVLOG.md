@@ -71,3 +71,23 @@ Bluetooth), battery use, importing real LRC files, Persian lyrics and keyboard e
 
 
 Device check (reported by the owner, 2026-11-27): Phase 4 approved.
+
+## 2026-11-28 — Phase 5 (built; device check pending)
+- Background Studio: fourteen styles as layers (up to six), each with switch, opacity,
+  intensity, speed, colors and order; eleven shared settings; seven built-in and any number
+  of saved presets; optional change with the next song; battery saver and frame-rate limit.
+- Off by default: until switched on, each theme keeps its own background. When on, the
+  player uses the theme's dark colors so text stays readable.
+- Database 4 adds saved presets; the upgrade keeps existing data.
+- Not included: custom shaders (drawing uses the hardware-accelerated Compose canvas),
+  backgrounds on screens other than the player, import or export of presets.
+
+Verified on GitHub Actions: 54 unit/Robolectric tests, lintDebug, assembleDebug, and four
+emulator tests on API 28 and 34. The new one checks that every style changes the picture in
+both themes, saves a preset, rotates the player and changes background with the song.
+
+Found by that test and fixed: with two identical saved presets the automatic change had
+nothing to switch to.
+
+Needs a real device: appearance of each style, smoothness, heat and battery use, readability
+of the player over bright covers, and reaction to music.
