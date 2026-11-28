@@ -40,6 +40,9 @@ fun nextScene(
     return distinct[(distinct.indexOf(current) + 1) % distinct.size]
 }
 
-/** The user's own presets rotate once there are at least two; until then everything does. */
+/**
+ * The user's own presets rotate once at least two of them differ; until then the built-in
+ * ones join in.
+ */
 fun rotationPool(saved: List<BackgroundScene>): List<BackgroundScene> =
-    if (saved.size >= 2) saved else saved + BuiltInPreset.entries.map { it.scene }
+    if (saved.distinct().size >= 2) saved else saved + BuiltInPreset.entries.map { it.scene }

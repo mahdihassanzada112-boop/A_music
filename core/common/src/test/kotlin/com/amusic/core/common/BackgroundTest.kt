@@ -87,6 +87,8 @@ class BackgroundTest {
         val mine = listOf(BackgroundScene(), BackgroundScene.Default)
         assertEquals(mine, rotationPool(mine))
         assertEquals(1 + BuiltInPreset.entries.size, rotationPool(mine.take(1)).size)
+        // Two copies of one preset would leave nothing to change to.
+        assertEquals(2 + BuiltInPreset.entries.size, rotationPool(listOf(mine[0], mine[0])).size)
     }
 
     @Test fun budgetShrinksToSavePower() {
