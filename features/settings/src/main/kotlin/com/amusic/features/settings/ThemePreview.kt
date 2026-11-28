@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
+import com.amusic.core.common.EqualizerSettings
 import com.amusic.core.common.OrientationMode
 import com.amusic.core.common.VisualizerSettings
 import com.amusic.core.theming.ApplyTheme
@@ -46,6 +47,7 @@ internal fun ThemePreview(theme: PlayerTheme, landscape: Boolean) {
             queue = List(4) { com.amusic.core.theming.QueueEntry("$title ${it + 1}", artist) },
             queueIndex = 0, sleepMinutesLeft = null, orientationMode = OrientationMode.AUTO,
             panel = PlayerPanel.NONE, lyrics = null, visualizer = VisualizerSettings(),
+            equalizer = EqualizerSettings(),
         )
     }
     val position = remember { mutableLongStateOf(92_000) }
@@ -103,6 +105,9 @@ private object NoActions : PlayerActions {
     override fun setVisualizer(settings: VisualizerSettings) = Unit
     override fun openVisualizerOptions() = Unit
     override fun openBackgroundStudio() = Unit
+    override fun setEqualizer(settings: EqualizerSettings) = Unit
+    override fun openEqualizer() = Unit
+    override fun openLayoutEditor() = Unit
     override fun importLyrics() = Unit
     override fun editLyrics() = Unit
     override fun removeLyrics() = Unit

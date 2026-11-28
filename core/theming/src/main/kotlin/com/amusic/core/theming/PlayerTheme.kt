@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import com.amusic.core.common.LandscapeLayout
+import com.amusic.core.common.LandscapePanel
 import com.amusic.core.common.ThemeId
 
 /**
@@ -41,6 +43,24 @@ interface PlayerTheme {
 
     @Composable
     fun LandscapePlayer(ui: PlayerUi, position: Position, actions: PlayerActions)
+
+    /**
+     * One part of a listener's own landscape arrangement, drawn in the theme's look. Asked
+     * for ARTWORK, INFO, PROGRESS and CONTROLS; the other panels are shared.
+     */
+    @Composable
+    fun LandscapeBlock(
+        panel: LandscapePanel,
+        ui: PlayerUi,
+        position: Position,
+        actions: PlayerActions,
+        layout: LandscapeLayout,
+        modifier: Modifier,
+    )
+
+    /** The surface behind a shared panel in such an arrangement. */
+    @Composable
+    fun LandscapePane(modifier: Modifier, content: @Composable () -> Unit)
 }
 
 val LocalDarkTheme = staticCompositionLocalOf { true }

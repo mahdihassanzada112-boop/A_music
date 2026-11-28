@@ -50,6 +50,19 @@ fun StudioButton(actions: PlayerActions) = IconButton(actions::openBackgroundStu
     Icon(painterResource(R.drawable.ic_studio), stringResource(R.string.player_studio))
 }
 
+/** Opens the equalizer; highlighted while it is switched on. */
+@Composable
+fun EqualizerButton(ui: PlayerUi, actions: PlayerActions, active: Color) {
+    val state = stringResource(if (ui.equalizer.enabled) R.string.state_on else R.string.state_off)
+    IconButton(actions::openEqualizer, Modifier.semantics { stateDescription = state }) {
+        Icon(
+            painterResource(R.drawable.ic_equalizer),
+            stringResource(R.string.player_equalizer),
+            tint = if (ui.equalizer.enabled) active else LocalContentColor.current.copy(alpha = 0.7f),
+        )
+    }
+}
+
 /**
  * Swaps the artwork for the visualizer. When a panel covers that area ([stageVisible] is
  * false), the button closes the panel and shows the visualizer.

@@ -87,4 +87,20 @@
     <string name="color_green">سبز</string>
     <string name="color_rainbow">رنگین‌کمان</string>
     <string name="player_studio">استودیوی پس‌زمینه</string>
+    <string name="player_equalizer">اکولایزر</string>
+    <string name="layout_customize">شخصی‌سازی چیدمان افقی</string>
+    <string name="layout_empty">هیچ بخشی نمایش داده نمی‌شود.</string>
+    <string name="eq_enable">اکولایزر روشن</string>
+    <string name="eq_bass">تقویت بیس</string>
+    <string name="eq_width">گسترش صدای استریو</string>
+    <string name="eq_all_bands">همه باندها</string>
+    <string name="eq_normal">عادی</string>
+    <string name="eq_rock">راک</string>
+    <string name="eq_pop">پاپ</string>
+    <string name="eq_classical">کلاسیک</string>
+    <string name="eq_jazz">جَز</string>
+    <string name="eq_hip_hop">هیپ‌هاپ</string>
+    <string name="eq_electronic">الکترونیک</string>
+    <string name="eq_acoustic">آکوستیک</string>
+    <string name="eq_custom">دلخواه</string>
 </resources>

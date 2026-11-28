@@ -1,7 +1,7 @@
 package com.amusic.features.player
 
 import android.app.Activity
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -28,11 +28,17 @@ fun PlayerBackdrop(viewModel: PlayerViewModel = hiltViewModel()) {
     val ui by viewModel.ui.collectAsStateWithLifecycle()
     LightSystemBarIcons()
     val theme = LocalPlayerTheme.current
+    val arrangement by viewModel.arrangement.collectAsStateWithLifecycle()
     ApplyTheme(theme, dark = true) {
         CompositionLocalProvider(LocalAudioFeed provides viewModel.audioFeed) {
-            Box(Modifier.fillMaxSize()) {
+            BoxWithConstraints(Modifier.fillMaxSize()) {
+                val landscape = ui?.orientationMode?.usesLandscape(maxWidth > maxHeight) == true
+                // A landscape arrangement may ask for a still picture.
+                val still = landscape && arrangement?.layout?.animatedBackground == false
                 theme.Background(Modifier.fillMaxSize())
-                BackgroundStage(settings, ui?.artworkUri, ui?.isPlaying == true, Modifier.fillMaxSize())
+                BackgroundStage(
+                    settings, ui?.artworkUri, ui?.isPlaying == true && !still, Modifier.fillMaxSize(),
+                )
             }
         }
     }

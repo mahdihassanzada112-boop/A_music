@@ -3,6 +3,7 @@ package com.amusic.core.theming
 import android.net.Uri
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.State
+import com.amusic.core.common.EqualizerSettings
 import com.amusic.core.common.OrientationMode
 import com.amusic.core.common.ParsedLyrics
 import com.amusic.core.common.Song
@@ -43,6 +44,7 @@ data class PlayerUi(
     /** null when the current song has no lyrics. */
     val lyrics: LyricsUi?,
     val visualizer: VisualizerSettings,
+    val equalizer: EqualizerSettings,
 )
 
 /** The only ways a theme can change anything. */
@@ -67,6 +69,10 @@ interface PlayerActions {
     fun setVisualizer(settings: VisualizerSettings)
     fun openVisualizerOptions()
     fun openBackgroundStudio()
+    fun setEqualizer(settings: EqualizerSettings)
+    fun openEqualizer()
+    /** The editor for the current theme's landscape arrangement. */
+    fun openLayoutEditor()
     fun importLyrics()
     fun editLyrics()
     /** Asks for confirmation first. */

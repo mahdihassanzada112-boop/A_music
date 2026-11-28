@@ -3,6 +3,7 @@ package com.amusic.core.audio
 import android.app.PendingIntent
 import android.os.SystemClock
 import android.content.Context
+import android.media.AudioManager
 import androidx.annotation.OptIn
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -19,6 +20,7 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.amusic.core.storage.PlaybackStateStore
 import com.amusic.core.storage.SavedPlayback
+import com.amusic.core.storage.SettingsRepository
 import com.amusic.data.LibraryRepository
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -31,6 +33,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
@@ -42,6 +45,8 @@ class PlaybackService : MediaSessionService() {
     @Inject lateinit var library: LibraryRepository
     @Inject lateinit var sleepTimer: SleepTimer
     @Inject lateinit var analyzer: AudioAnalyzer
+    @Inject lateinit var equalizer: EqualizerControl
+    @Inject lateinit var settings: SettingsRepository
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var session: MediaSession? = null
@@ -75,6 +80,11 @@ class PlaybackService : MediaSessionService() {
         session = builder.build()
 
         player.addListener(listener)
+        val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        scope.launch {
+            combine(settings.equalizer, audio.headphones(), ::Pair)
+                .collect { (wanted, headphones) -> equalizer.apply(wanted, headphones) }
+        }
         scope.launch { restore(player) }
         scope.launch {
             while (isActive) {
@@ -107,7 +117,7 @@ class PlaybackService : MediaSessionService() {
         super.onDestroy()
     }
 
-    /** The default audio output, with a read-only tap for the visualizers. */
+    /** The default audio output: the equalizer, then a read-only tap for the visualizers. */
     private fun renderers() = object : DefaultRenderersFactory(this) {
         override fun buildAudioSink(
             context: Context,
@@ -116,7 +126,7 @@ class PlaybackService : MediaSessionService() {
         ): AudioSink = DefaultAudioSink.Builder(context)
             .setEnableFloatOutput(enableFloatOutput)
             .setEnableAudioTrackPlaybackParams(enableAudioTrackPlaybackParams)
-            .setAudioProcessors(arrayOf(TeeAudioProcessor(analyzer.sink)))
+            .setAudioProcessors(arrayOf(equalizer.processor, TeeAudioProcessor(analyzer.sink)))
             .build()
     }
 

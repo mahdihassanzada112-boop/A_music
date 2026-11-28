@@ -13,6 +13,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.amusic.core.common.LandscapeLayout
+import com.amusic.core.common.LandscapePanel
 import com.amusic.core.common.ThemeId
 import com.amusic.core.theming.HomeActions
 import com.amusic.core.theming.HomeUi
@@ -120,4 +122,18 @@ object GlassTheme : PlayerTheme {
     @Composable
     override fun LandscapePlayer(ui: PlayerUi, position: Position, actions: PlayerActions) =
         GlassLandscapePlayer(ui, position, actions)
+
+    @Composable
+    override fun LandscapeBlock(
+        panel: LandscapePanel,
+        ui: PlayerUi,
+        position: Position,
+        actions: PlayerActions,
+        layout: LandscapeLayout,
+        modifier: Modifier,
+    ) = GlassLandscapeBlock(panel, ui, position, actions, layout, modifier)
+
+    @Composable
+    override fun LandscapePane(modifier: Modifier, content: @Composable () -> Unit) =
+        GlassLandscapePane(modifier, content)
 }

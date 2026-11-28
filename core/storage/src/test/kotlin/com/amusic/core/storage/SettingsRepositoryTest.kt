@@ -4,6 +4,10 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import com.amusic.core.common.AutoBackground
 import com.amusic.core.common.BackgroundSettings
 import com.amusic.core.common.BuiltInPreset
+import com.amusic.core.common.EqPreset
+import com.amusic.core.common.EqualizerSettings
+import com.amusic.core.common.LandscapeLayout
+import com.amusic.core.common.LandscapePanel
 import com.amusic.core.common.OrientationMode
 import com.amusic.core.common.ThemeId
 import com.amusic.core.common.ThemeMode
@@ -81,5 +85,40 @@ class SettingsRepositoryTest {
         )
         repository.updateBackground { it.copy(fpsLimit = 1_000) }
         assertEquals(BackgroundSettings.DEFAULT_FPS, repository.background.first().fpsLimit)
+    }
+
+    @Test
+    fun equalizerPersistsPresetsAndCustomCurves() = runTest {
+        val store = PreferenceDataStoreFactory.create(scope = backgroundScope) {
+            folder.root.resolve("eq.preferences_pb")
+        }
+        val repository = SettingsRepository(store)
+        assertEquals(EqualizerSettings(), repository.equalizer.first())
+        repository.updateEqualizer { it.copy(enabled = true, bass = 5f).choose(EqPreset.ROCK) }
+        assertEquals(EqPreset.ROCK.bands, repository.equalizer.first().bands)
+        assertEquals(1f, repository.equalizer.first().bass)
+        repository.updateEqualizer { it.withBand(2, -7f) }
+        val custom = repository.equalizer.first()
+        assertEquals(EqPreset.CUSTOM, custom.preset)
+        assertEquals(-7f, custom.bands[2])
+    }
+
+    @Test
+    fun eachThemeKeepsItsOwnLandscapeLayout() = runTest {
+        val store = PreferenceDataStoreFactory.create(scope = backgroundScope) {
+            folder.root.resolve("layout.preferences_pb")
+        }
+        val repository = SettingsRepository(store)
+        assertEquals(null, repository.landscapeLayout(ThemeId.GLASS).first())
+        repository.updateLandscapeLayout(ThemeId.GLASS) { LandscapeLayout.ThreeColumns }
+        repository.updateLandscapeLayout(ThemeId.DARK_MODERN) { LandscapeLayout.TwoColumns }
+        repository.updateLandscapeLayout(ThemeId.GLASS) { it!!.hide(LandscapePanel.QUEUE) }
+        assertEquals(
+            LandscapeLayout.ThreeColumns.hide(LandscapePanel.QUEUE),
+            repository.landscapeLayout(ThemeId.GLASS).first(),
+        )
+        assertEquals(LandscapeLayout.TwoColumns, repository.landscapeLayout(ThemeId.DARK_MODERN).first())
+        repository.updateLandscapeLayout(ThemeId.GLASS) { null }
+        assertEquals(null, repository.landscapeLayout(ThemeId.GLASS).first())
     }
 }

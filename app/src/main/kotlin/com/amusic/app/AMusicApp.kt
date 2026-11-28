@@ -28,11 +28,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.amusic.core.theming.LocalPlayerTheme
 import com.amusic.core.theming.NavItem
+import com.amusic.features.customize.EqualizerScreen
+import com.amusic.features.customize.LayoutEditorScreen
 import com.amusic.features.home.HomeScreen
 import com.amusic.features.library.LibraryScreen
 import com.amusic.features.player.MiniPlayer
 import com.amusic.features.player.NowPlayingScreen
 import com.amusic.features.player.PlayerBackdrop
+import com.amusic.features.player.PlayerScreens
 import com.amusic.features.settings.SettingsScreen
 import com.amusic.features.settings.ThemesScreen
 import com.amusic.features.studio.StudioScreen
@@ -40,6 +43,11 @@ import com.amusic.features.studio.StudioScreen
 private const val PLAYER_ROUTE = "player"
 private const val THEMES_ROUTE = "themes"
 private const val STUDIO_ROUTE = "studio"
+private const val EQUALIZER_ROUTE = "equalizer"
+private const val LAYOUT_ROUTE = "layout"
+
+/** Screens that use the whole window, without the mini player and navigation bar. */
+private val FULL_SCREEN = listOf(PLAYER_ROUTE, STUDIO_ROUTE, EQUALIZER_ROUTE, LAYOUT_ROUTE)
 
 private enum class Destination(val route: String, @param:StringRes val label: Int, val icon: ImageVector) {
     HOME("home", R.string.nav_home, Icons.Filled.Home),
@@ -59,6 +67,8 @@ fun AMusicApp(onLibraryAccess: () -> Unit) {
         entry?.destination?.hierarchy?.any { it.route == destination.route } == true
     }.let { if (it == -1) Destination.SETTINGS.ordinal else it }
 
+    fun open(route: String) = navController.navigate(route) { launchSingleTop = true }
+
     Box(Modifier.fillMaxSize()) {
     theme.Background(Modifier.fillMaxSize())
     if (entry?.destination?.route == PLAYER_ROUTE) PlayerBackdrop()
@@ -67,7 +77,7 @@ fun AMusicApp(onLibraryAccess: () -> Unit) {
         contentColor = MaterialTheme.colorScheme.onBackground,
         contentWindowInsets = WindowInsets.safeDrawing,
         bottomBar = {
-            if (entry?.destination?.route !in listOf(PLAYER_ROUTE, STUDIO_ROUTE)) {
+            if (entry?.destination?.route !in FULL_SCREEN) {
                 Column {
                     MiniPlayer(onOpen = {
                         navController.navigate(PLAYER_ROUTE) { launchSingleTop = true }
@@ -96,7 +106,9 @@ fun AMusicApp(onLibraryAccess: () -> Unit) {
                 composable(Destination.SETTINGS.route) {
                     SettingsScreen(
                         onOpenThemes = { navController.navigate(THEMES_ROUTE) },
-                        onOpenStudio = { navController.navigate(STUDIO_ROUTE) },
+                        onOpenStudio = { open(STUDIO_ROUTE) },
+                        onOpenEqualizer = { open(EQUALIZER_ROUTE) },
+                        onOpenLayoutEditor = { open(LAYOUT_ROUTE) },
                     )
                 }
                 composable(THEMES_ROUTE) {
@@ -105,8 +117,18 @@ fun AMusicApp(onLibraryAccess: () -> Unit) {
                 composable(PLAYER_ROUTE) {
                     NowPlayingScreen(
                         onBack = { navController.popBackStack() },
-                        onOpenStudio = { navController.navigate(STUDIO_ROUTE) { launchSingleTop = true } },
+                        screens = PlayerScreens(
+                            studio = { open(STUDIO_ROUTE) },
+                            equalizer = { open(EQUALIZER_ROUTE) },
+                            layoutEditor = { open(LAYOUT_ROUTE) },
+                        ),
                     )
+                }
+                composable(EQUALIZER_ROUTE) {
+                    EqualizerScreen(onBack = { navController.popBackStack() })
+                }
+                composable(LAYOUT_ROUTE) {
+                    LayoutEditorScreen(onBack = { navController.popBackStack() })
                 }
                 composable(STUDIO_ROUTE) {
                     StudioScreen(onBack = { navController.popBackStack() })

@@ -31,6 +31,8 @@ import com.amusic.core.theming.R as ThemingR
 fun SettingsScreen(
     onOpenThemes: () -> Unit,
     onOpenStudio: () -> Unit,
+    onOpenEqualizer: () -> Unit,
+    onOpenLayoutEditor: () -> Unit,
     viewModel: SettingsViewModel = hiltViewModel(),
 ) {
     val mode by viewModel.themeMode.collectAsStateWithLifecycle()
@@ -40,6 +42,8 @@ fun SettingsScreen(
     ScreenScaffold(stringResource(R.string.settings_title)) {
         Button(onClick = onOpenThemes) { Text(stringResource(R.string.themes_title)) }
         Button(onClick = onOpenStudio) { Text(stringResource(ThemingR.string.player_studio)) }
+        Button(onClick = onOpenEqualizer) { Text(stringResource(ThemingR.string.player_equalizer)) }
+        Button(onClick = onOpenLayoutEditor) { Text(stringResource(ThemingR.string.layout_customize)) }
         ChoiceGroup(
             title = stringResource(R.string.settings_appearance),
             options = listOf(

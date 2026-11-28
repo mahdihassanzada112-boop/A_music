@@ -12,7 +12,10 @@ import com.amusic.core.audio.PlayerController
 import com.amusic.core.audio.RepeatSetting
 import com.amusic.core.audio.SleepTimer
 import com.amusic.core.common.AudioFeed
+import com.amusic.core.common.EqualizerSettings
+import com.amusic.core.common.LandscapeLayout
 import com.amusic.core.common.OrientationMode
+import com.amusic.core.common.ThemeId
 import com.amusic.core.common.VisualizerSettings
 import com.amusic.core.common.parseLyrics
 import com.amusic.core.storage.SettingsRepository
@@ -44,6 +47,9 @@ import kotlinx.coroutines.launch
 /** Text being edited, kept here so it survives rotation. */
 data class LyricsDraft(val songId: Long, val text: String)
 
+/** [layout] is null while [theme] uses its own landscape design. */
+data class Arrangement(val theme: ThemeId, val layout: LandscapeLayout?)
+
 private class SongLyrics(val songId: Long, val text: String, val ui: LyricsUi)
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,6 +66,11 @@ class PlayerViewModel @Inject constructor(
 
     /** null until read, so the player does not flash the wrong background. */
     val background = settings.background
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
+
+    /** The current theme's own landscape arrangement; null until read. */
+    val arrangement = settings.themeId
+        .flatMapLatest { theme -> settings.landscapeLayout(theme).map { Arrangement(theme, it) } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
 
     var draft by mutableStateOf<LyricsDraft?>(null)
@@ -132,17 +143,21 @@ class PlayerViewModel @Inject constructor(
             panel = PlayerPanel.NONE,
             lyrics = null,
             visualizer = VisualizerSettings(),
+            equalizer = EqualizerSettings(),
         ) to current.songId
     }
 
     /** null while nothing is queued. */
-    val ui = combine(playback, storedLyrics, panel, settings.visualizer) { base, lyrics, shown, visualizer ->
+    val ui = combine(
+        playback, storedLyrics, panel, settings.visualizer, settings.equalizer,
+    ) { base, lyrics, shown, visualizer, equalizer ->
         base?.let { (ui, songId) ->
             ui.copy(
                 panel = shown,
                 // A song change may arrive before its lyrics do.
                 lyrics = lyrics?.takeIf { it.songId == songId }?.ui,
                 visualizer = visualizer,
+                equalizer = equalizer,
             )
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), null)
@@ -181,6 +196,10 @@ class PlayerViewModel @Inject constructor(
 
     fun setVisualizer(value: VisualizerSettings) {
         viewModelScope.launch { settings.setVisualizer(value) }
+    }
+
+    fun setEqualizer(value: EqualizerSettings) {
+        viewModelScope.launch { settings.updateEqualizer { value } }
     }
 
     fun currentSongId(): Long? = player.state.value.current?.songId

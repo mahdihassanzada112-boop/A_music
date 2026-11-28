@@ -18,7 +18,7 @@ object DatabaseModule {
         Room.databaseBuilder(context, AMusicDatabase::class.java, "amusic.db")
             // Version 1 shipped before scanning existed, so it never held any data.
             .fallbackToDestructiveMigrationFrom(true, 1)
-            .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .build()
 
     @Provides
@@ -32,4 +32,7 @@ object DatabaseModule {
 
     @Provides
     fun presetDao(db: AMusicDatabase): PresetDao = db.presetDao()
+
+    @Provides
+    fun profileDao(db: AMusicDatabase): ProfileDao = db.profileDao()
 }

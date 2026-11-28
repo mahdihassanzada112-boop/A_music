@@ -31,7 +31,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import com.amusic.core.common.LandscapeLayout
+import com.amusic.core.common.LandscapePanel
 import com.amusic.core.design.artistLabel
+import com.amusic.core.theming.EqualizerButton
+import com.amusic.core.theming.LandscapeControls
 import com.amusic.core.theming.BackButton
 import com.amusic.core.theming.FadingArtwork
 import com.amusic.core.theming.FavoriteButton
@@ -88,9 +92,14 @@ internal fun DarkPortraitPlayer(ui: PlayerUi, position: Position, actions: Playe
                     }
                     Timeline(ui, position, actions)
                     Transport(ui, actions, 76.dp)
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         SpeedMenu(ui, actions)
                         SleepMenu(ui, actions)
+                        EqualizerButton(ui, actions, MaterialTheme.colorScheme.primary)
                     }
                 }
             }
@@ -147,9 +156,14 @@ internal fun DarkLandscapePlayer(ui: PlayerUi, position: Position, actions: Play
                     )
                     StudioButton(actions)
                 }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     SpeedMenu(ui, actions)
                     SleepMenu(ui, actions)
+                    EqualizerButton(ui, actions, MaterialTheme.colorScheme.primary)
                 }
             }
             if (threeColumns) {
@@ -168,6 +182,39 @@ internal fun DarkLandscapePlayer(ui: PlayerUi, position: Position, actions: Play
                 }
             }
         }
+    }
+}
+
+@Composable
+internal fun DarkLandscapeBlock(
+    panel: LandscapePanel,
+    ui: PlayerUi,
+    position: Position,
+    actions: PlayerActions,
+    layout: LandscapeLayout,
+    modifier: Modifier,
+) {
+    when (panel) {
+        LandscapePanel.ARTWORK -> BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
+            Art(ui, min(maxWidth, maxHeight))
+        }
+        LandscapePanel.INFO -> Titles(ui, TextAlign.Center, modifier)
+        LandscapePanel.PROGRESS -> Box(modifier) { Timeline(ui, position, actions) }
+        LandscapePanel.CONTROLS -> LandscapeControls(
+            ui, actions, layout, MaterialTheme.colorScheme.primary, modifier,
+        ) {
+            PlayButton(
+                ui, actions, 56.dp, MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+        else -> Unit
+    }
+}
+
+@Composable
+internal fun DarkLandscapePane(modifier: Modifier, content: @Composable () -> Unit) {
+    Box(modifier.clip(MaterialTheme.shapes.large).background(MaterialTheme.colorScheme.surfaceContainer)) {
+        content()
     }
 }
 

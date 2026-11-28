@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="customize_name">Name</string>
+    <string name="customize_delete">Delete</string>
+    <string name="customize_delete_named">Delete %s</string>
+    <string name="customize_delete_confirm">Delete \"%s\"?</string>
+    <string name="equalizer_headphones_only">Only with headphones</string>
+    <string name="equalizer_headphones_hint">Wired, USB and Bluetooth audio devices count. Android cannot tell a Bluetooth speaker from headphones.</string>
+    <string name="equalizer_status_off">The equalizer is off.</string>
+    <string name="equalizer_status_waiting">Waiting for headphones; sound is unchanged.</string>
+    <string name="equalizer_status_on">The equalizer is shaping the sound.</string>
+    <string name="equalizer_presets">Presets</string>
+    <string name="equalizer_bands">Frequency bands</string>
+    <string name="equalizer_width_hint">Stereo widening is this app\'s own effect. Mono songs do not change.</string>
+    <string name="equalizer_own">Your presets</string>
+    <string name="equalizer_save">Save current bands</string>
+    <string name="equalizer_reset">Reset sound</string>
+    <string name="equalizer_delay_hint">A change is heard after a brief moment.</string>
+    <string name="layout_for_theme">Theme: %s. Each theme keeps its own layout.</string>
+    <string name="layout_theme_design">Theme design</string>
+    <string name="layout_two_columns">Two columns</string>
+    <string name="layout_three_columns">Three columns</string>
+    <string name="layout_theme_design_hint">The theme\'s own landscape player is in use. Choose two or three columns to arrange your own.</string>
+    <string name="layout_drag_hint">Press and hold a panel, then drag it. Its menu can move it too.</string>
+    <string name="layout_column">Column %d</string>
+    <string name="layout_widths">Column widths</string>
+    <string name="layout_heights">Panel heights</string>
+    <string name="layout_heights_hint">Tall panels in one column share the spare height.</string>
+    <string name="layout_buttons">Buttons and background</string>
+    <string name="layout_favorite">Favorite</string>
+    <string name="layout_animated_background">Moving background</string>
+    <string name="layout_animated_hint">Applies to the Background Studio picture in landscape.</string>
+    <string name="layout_profiles">Saved layouts</string>
+    <string name="layout_save_profile">Save this layout</string>
+    <string name="layout_restore">Restore theme default</string>
+    <string name="layout_hidden">Hidden panels</string>
+    <string name="layout_hidden_none">Drag a panel here to hide it.</string>
+    <string name="layout_move_named">Move %s</string>
+    <string name="layout_move_to">Move to column %d</string>
+    <string name="layout_hide">Hide</string>
+    <string name="panel_artwork">Album art</string>
+    <string name="panel_info">Song info</string>
+    <string name="panel_progress">Progress bar</string>
+    <string name="panel_controls">Controls</string>
+</resources>

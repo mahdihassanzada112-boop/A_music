@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.amusic.core.common.LandscapeLayout
+import com.amusic.core.common.LandscapePanel
 import com.amusic.core.common.ThemeId
 import com.amusic.core.theming.HomeActions
 import com.amusic.core.theming.HomeUi
@@ -92,4 +94,18 @@ object DarkModernTheme : PlayerTheme {
     @Composable
     override fun LandscapePlayer(ui: PlayerUi, position: Position, actions: PlayerActions) =
         DarkLandscapePlayer(ui, position, actions)
+
+    @Composable
+    override fun LandscapeBlock(
+        panel: LandscapePanel,
+        ui: PlayerUi,
+        position: Position,
+        actions: PlayerActions,
+        layout: LandscapeLayout,
+        modifier: Modifier,
+    ) = DarkLandscapeBlock(panel, ui, position, actions, layout, modifier)
+
+    @Composable
+    override fun LandscapePane(modifier: Modifier, content: @Composable () -> Unit) =
+        DarkLandscapePane(modifier, content)
 }

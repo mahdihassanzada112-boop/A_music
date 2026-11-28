@@ -1,12 +1,14 @@
 package com.amusic.app
 
 import com.amusic.core.audio.AudioAnalyzer
+import com.amusic.core.audio.EqualizerControl
 import com.amusic.core.audio.PlayerController
 import com.amusic.core.storage.PlaybackStateStore
 import com.amusic.core.storage.SettingsRepository
 import com.amusic.data.LibraryRepository
 import com.amusic.data.LyricsRepository
 import com.amusic.data.PresetRepository
+import com.amusic.data.ProfileRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -22,4 +24,6 @@ interface TestAccess {
     fun lyrics(): LyricsRepository
     fun analyzer(): AudioAnalyzer
     fun presets(): PresetRepository
+    fun profiles(): ProfileRepository
+    fun equalizer(): EqualizerControl
 }

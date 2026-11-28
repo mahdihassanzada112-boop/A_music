@@ -22,3 +22,17 @@ val MIGRATION_3_4 = object : Migration(3, 4) {
         )
     }
 }
+
+/** Adds landscape layout profiles and equalizer presets. */
+val MIGRATION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `layout_profiles` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "`theme` TEXT NOT NULL, `name` TEXT NOT NULL, `layout` TEXT NOT NULL)",
+        )
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS `eq_presets` " +
+                "(`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `bands` TEXT NOT NULL)",
+        )
+    }
+}

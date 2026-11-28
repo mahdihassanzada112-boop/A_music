@@ -13,5 +13,5 @@ include(
     ":themes:darkmodern", ":themes:glass",
     ":data",
     ":features:home", ":features:library", ":features:settings", ":features:player",
-    ":features:studio",
+    ":features:studio", ":features:customize",
 )

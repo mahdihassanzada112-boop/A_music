@@ -12,6 +12,12 @@ import com.amusic.core.common.AutoBackground
 import com.amusic.core.common.BackgroundCodec
 import com.amusic.core.common.BackgroundScene
 import com.amusic.core.common.BackgroundSettings
+import com.amusic.core.common.EqPreset
+import com.amusic.core.common.EqualizerSettings
+import com.amusic.core.common.LandscapeLayout
+import com.amusic.core.common.LayoutCodec
+import com.amusic.core.common.decodeBands
+import com.amusic.core.common.encodeBands
 import com.amusic.core.common.OrientationMode
 import com.amusic.core.common.SortOrder
 import com.amusic.core.common.ThemeId
@@ -125,7 +131,59 @@ class SettingsRepository @Inject constructor(private val store: DataStore<Prefer
             ?: BackgroundSettings.DEFAULT_FPS,
     )
 
+    val equalizer: Flow<EqualizerSettings> = store.data
+        .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+        .map { it.toEqualizer() }
+        .distinctUntilChanged()
+
+    suspend fun updateEqualizer(change: (EqualizerSettings) -> EqualizerSettings) {
+        store.edit {
+            val new = change(it.toEqualizer()).clamped()
+            it[EQ_ENABLED] = new.enabled
+            it[EQ_PRESET] = new.preset.name
+            it[EQ_BANDS] = encodeBands(new.bands)
+            it[EQ_BASS] = new.bass
+            it[EQ_WIDTH] = new.width
+            it[EQ_HEADPHONES] = new.headphonesOnly
+        }
+    }
+
+    private fun Preferences.toEqualizer(): EqualizerSettings {
+        val preset = EqPreset.fromName(this[EQ_PRESET])
+        return EqualizerSettings(
+            enabled = this[EQ_ENABLED] ?: false,
+            preset = preset,
+            bands = if (preset == EqPreset.CUSTOM) decodeBands(this[EQ_BANDS]) ?: preset.bands else preset.bands,
+            bass = this[EQ_BASS] ?: 0f,
+            width = this[EQ_WIDTH] ?: 0f,
+            headphonesOnly = this[EQ_HEADPHONES] ?: false,
+        ).clamped()
+    }
+
+    /** The listener's own landscape arrangement for a theme; null uses the theme's design. */
+    fun landscapeLayout(theme: ThemeId): Flow<LandscapeLayout?> = store.data
+        .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+        .map { LayoutCodec.decode(it[layoutKey(theme)]) }
+        .distinctUntilChanged()
+
+    /** Changes a theme's arrangement in one step; returning null restores the theme's design. */
+    suspend fun updateLandscapeLayout(theme: ThemeId, change: (LandscapeLayout?) -> LandscapeLayout?) {
+        val key = layoutKey(theme)
+        store.edit {
+            val new = change(LayoutCodec.decode(it[key]))
+            if (new == null) it.remove(key) else it[key] = LayoutCodec.encode(new)
+        }
+    }
+
+    private fun layoutKey(theme: ThemeId) = stringPreferencesKey("landscape_layout_${theme.name}")
+
     private companion object {
+        val EQ_ENABLED = booleanPreferencesKey("eq_enabled")
+        val EQ_PRESET = stringPreferencesKey("eq_preset")
+        val EQ_BANDS = stringPreferencesKey("eq_bands")
+        val EQ_BASS = floatPreferencesKey("eq_bass")
+        val EQ_WIDTH = floatPreferencesKey("eq_width")
+        val EQ_HEADPHONES = booleanPreferencesKey("eq_headphones_only")
         val BACKGROUND_ENABLED = booleanPreferencesKey("background_enabled")
         val BACKGROUND_SCENE = stringPreferencesKey("background_scene")
         val BACKGROUND_AUTO = stringPreferencesKey("background_auto")

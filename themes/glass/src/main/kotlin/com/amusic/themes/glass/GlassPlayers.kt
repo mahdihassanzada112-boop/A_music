@@ -40,7 +40,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
+import com.amusic.core.common.LandscapeLayout
+import com.amusic.core.common.LandscapePanel
 import com.amusic.core.design.artistLabel
+import com.amusic.core.theming.EqualizerButton
+import com.amusic.core.theming.LandscapeControls
 import com.amusic.core.theming.BackButton
 import com.amusic.core.theming.FadingArtwork
 import com.amusic.core.theming.FavoriteButton
@@ -126,9 +130,14 @@ internal fun GlassPortraitPlayer(ui: PlayerUi, position: Position, actions: Play
                 RepeatButton(ui, actions, accent)
             }
         }
-        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             SpeedMenu(ui, actions)
             SleepMenu(ui, actions)
+            EqualizerButton(ui, actions, MaterialTheme.colorScheme.primary)
         }
     }
 }
@@ -206,13 +215,45 @@ private fun LandscapeStage(ui: PlayerUi, actions: PlayerActions, modifier: Modif
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Titles(ui)
-                Row {
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     SpeedMenu(ui, actions)
                     SleepMenu(ui, actions)
+                    EqualizerButton(ui, actions, MaterialTheme.colorScheme.primary)
                 }
             }
         }
     }
+}
+
+@Composable
+internal fun GlassLandscapeBlock(
+    panel: LandscapePanel,
+    ui: PlayerUi,
+    position: Position,
+    actions: PlayerActions,
+    layout: LandscapeLayout,
+    modifier: Modifier,
+) {
+    when (panel) {
+        LandscapePanel.ARTWORK -> BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
+            Disc(ui, min(maxWidth, maxHeight))
+        }
+        LandscapePanel.INFO -> Column(
+            modifier.glass().padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) { Titles(ui) }
+        LandscapePanel.PROGRESS ->
+            Timeline(ui, position, actions, modifier.glass().padding(horizontal = 12.dp))
+        LandscapePanel.CONTROLS -> LandscapeControls(ui, actions, layout, FavoriteTint, modifier.glass()) {
+            Play(ui, actions, 56.dp)
+        }
+        else -> Unit
+    }
+}
+
+@Composable
+internal fun GlassLandscapePane(modifier: Modifier, content: @Composable () -> Unit) {
+    Box(modifier.glass()) { content() }
 }
 
 @Composable

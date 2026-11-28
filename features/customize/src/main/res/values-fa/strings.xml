@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="customize_name">نام</string>
+    <string name="customize_delete">حذف</string>
+    <string name="customize_delete_named">حذف %s</string>
+    <string name="customize_delete_confirm">«%s» حذف شود؟</string>
+    <string name="equalizer_headphones_only">فقط با هدفون</string>
+    <string name="equalizer_headphones_hint">هدفون سیمی، USB و دستگاه صوتی بلوتوث حساب می‌شوند. اندروید اسپیکر بلوتوث را از هدفون تشخیص نمی‌دهد.</string>
+    <string name="equalizer_status_off">اکولایزر خاموش است.</string>
+    <string name="equalizer_status_waiting">در انتظار هدفون؛ صدا تغییری نمی‌کند.</string>
+    <string name="equalizer_status_on">اکولایزر روی صدا اعمال می‌شود.</string>
+    <string name="equalizer_presets">حالت‌های آماده</string>
+    <string name="equalizer_bands">باندهای فرکانس</string>
+    <string name="equalizer_width_hint">گسترش استریو افکت خود برنامه است. آهنگ‌های مونو تغییری نمی‌کنند.</string>
+    <string name="equalizer_own">حالت‌های شما</string>
+    <string name="equalizer_save">ذخیره باندهای فعلی</string>
+    <string name="equalizer_reset">بازنشانی صدا</string>
+    <string name="equalizer_delay_hint">تغییرها بعد از یک لحظه کوتاه شنیده می‌شوند.</string>
+    <string name="layout_for_theme">تم: %s. هر تم چیدمان خودش را نگه می‌دارد.</string>
+    <string name="layout_theme_design">طراحی تم</string>
+    <string name="layout_two_columns">دو ستون</string>
+    <string name="layout_three_columns">سه ستون</string>
+    <string name="layout_theme_design_hint">پخش‌کننده افقیِ خود تم استفاده می‌شود. برای چیدمان دلخواه، دو یا سه ستون را انتخاب کنید.</string>
+    <string name="layout_drag_hint">یک بخش را نگه دارید و بکشید. از منوی آن هم می‌توانید جابه‌جایش کنید.</string>
+    <string name="layout_column">ستون %d</string>
+    <string name="layout_widths">عرض ستون‌ها</string>
+    <string name="layout_heights">ارتفاع بخش‌ها</string>
+    <string name="layout_heights_hint">بخش‌های بلندِ یک ستون ارتفاع خالی را میان خود تقسیم می‌کنند.</string>
+    <string name="layout_buttons">دکمه‌ها و پس‌زمینه</string>
+    <string name="layout_favorite">علاقه‌مندی</string>
+    <string name="layout_animated_background">پس‌زمینه متحرک</string>
+    <string name="layout_animated_hint">روی تصویر استودیوی پس‌زمینه در حالت افقی اثر دارد.</string>
+    <string name="layout_profiles">چیدمان‌های ذخیره‌شده</string>
+    <string name="layout_save_profile">ذخیره این چیدمان</string>
+    <string name="layout_restore">بازگشت به پیش‌فرض تم</string>
+    <string name="layout_hidden">بخش‌های پنهان</string>
+    <string name="layout_hidden_none">برای پنهان کردن، یک بخش را اینجا بکشید.</string>
+    <string name="layout_move_named">جابه‌جایی %s</string>
+    <string name="layout_move_to">انتقال به ستون %d</string>
+    <string name="layout_hide">پنهان کردن</string>
+    <string name="panel_artwork">تصویر آلبوم</string>
+    <string name="panel_info">اطلاعات آهنگ</string>
+    <string name="panel_progress">نوار پیشرفت</string>
+    <string name="panel_controls">دکمه‌های پخش</string>
+</resources>

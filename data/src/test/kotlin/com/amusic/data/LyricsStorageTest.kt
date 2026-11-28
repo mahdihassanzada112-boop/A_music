@@ -7,6 +7,10 @@ import androidx.test.core.app.ApplicationProvider
 import com.amusic.core.database.AMusicDatabase
 import com.amusic.core.database.MIGRATION_2_3
 import com.amusic.core.database.MIGRATION_3_4
+import com.amusic.core.database.MIGRATION_4_5
+import com.amusic.core.common.EqPreset
+import com.amusic.core.common.LandscapeLayout
+import com.amusic.core.common.ThemeId
 import com.amusic.core.common.BuiltInPreset
 import java.io.File
 import kotlinx.coroutines.flow.first
@@ -46,10 +50,10 @@ class LyricsStorageTest {
         }
     }
 
-    @Test fun upgradeKeepsUserDataAndAddsLyricsAndPresets() = runBlocking {
+    @Test fun upgradeKeepsUserDataAndAddsLaterTables() = runBlocking {
         createVersion2("upgrade.db")
         val db = Room.databaseBuilder(context, AMusicDatabase::class.java, "upgrade.db")
-            .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
             .allowMainThreadQueries()
             .build()
         try {
@@ -74,6 +78,20 @@ class LyricsStorageTest {
             assertEquals(BuiltInPreset.CONCERT.scene, saved.scene)
             presets.delete(saved.id)
             assertEquals(emptyList<BackgroundPreset>(), presets.presets.first())
+
+            val profiles = ProfileRepository(db.profileDao())
+            profiles.saveLayout(ThemeId.GLASS, "Wide", LandscapeLayout.ThreeColumns)
+            profiles.saveLayout(ThemeId.GLASS, " ", LandscapeLayout.TwoColumns)
+            val layout = profiles.layouts(ThemeId.GLASS).first().single()
+            assertEquals(LandscapeLayout.ThreeColumns, layout.layout)
+            assertEquals(0, profiles.layouts(ThemeId.DARK_MODERN).first().size)
+            profiles.deleteLayout(layout.id)
+            assertEquals(0, profiles.layouts(ThemeId.GLASS).first().size)
+            profiles.saveCurve("Mine", EqPreset.ROCK.bands)
+            val curve = profiles.curves.first().single()
+            assertEquals(EqPreset.ROCK.bands, curve.bands)
+            profiles.deleteCurve(curve.id)
+            assertEquals(0, profiles.curves.first().size)
         } finally {
             db.close()
         }

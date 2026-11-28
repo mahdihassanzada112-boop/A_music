@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import com.amusic.core.theming.LocalDarkTheme
 import com.amusic.core.theming.ApplyTheme
+import com.amusic.core.theming.CustomLandscape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.TextButton
@@ -41,6 +42,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.amusic.core.common.EqualizerSettings
 import com.amusic.core.common.OrientationMode
 import com.amusic.core.common.VisualizerSettings
 import com.amusic.core.theming.LocalAudioFeed
@@ -61,7 +63,7 @@ private class Actions(
     private val onBack: () -> Unit,
     private val position: androidx.compose.runtime.MutableLongState,
     private val onImport: () -> Unit,
-    private val onStudio: () -> Unit,
+    private val screens: () -> PlayerScreens,
 ) : PlayerActions {
     override fun back() = onBack()
     override fun togglePlay() = vm.togglePlay()
@@ -86,7 +88,10 @@ private class Actions(
     override fun openVisualizerOptions() {
         vm.showVisualizerOptions = true
     }
-    override fun openBackgroundStudio() = onStudio()
+    override fun openBackgroundStudio() = screens().studio()
+    override fun setEqualizer(settings: EqualizerSettings) = vm.setEqualizer(settings)
+    override fun openEqualizer() = screens().equalizer()
+    override fun openLayoutEditor() = screens().layoutEditor()
     override fun importLyrics() = onImport()
     override fun editLyrics() = vm.editLyrics()
     override fun removeLyrics() = vm.askToRemoveLyrics()
@@ -101,14 +106,14 @@ private fun rememberSession(
     vm: PlayerViewModel,
     onBack: () -> Unit,
     onImport: () -> Unit = {},
-    onStudio: () -> Unit = {},
+    screens: PlayerScreens = PlayerScreens(),
 ): Session? {
     val ui by vm.ui.collectAsStateWithLifecycle()
     val position = remember { mutableLongStateOf(vm.positionMs()) }
     val latestImport by rememberUpdatedState(onImport)
-    val latestStudio by rememberUpdatedState(onStudio)
+    val latestScreens by rememberUpdatedState(screens)
     val actions = remember(vm, onBack) {
-        Actions(vm, onBack, position, { latestImport() }, { latestStudio() })
+        Actions(vm, onBack, position, { latestImport() }, { latestScreens })
     }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     // Polls only while visible.
@@ -130,10 +135,17 @@ fun MiniPlayer(onOpen: () -> Unit, viewModel: PlayerViewModel = hiltViewModel())
     LocalPlayerTheme.current.MiniPlayer(session.ui, session.position, session.actions, onOpen)
 }
 
+/** The other screens the player can open. */
+class PlayerScreens(
+    val studio: () -> Unit = {},
+    val equalizer: () -> Unit = {},
+    val layoutEditor: () -> Unit = {},
+)
+
 @Composable
 fun NowPlayingScreen(
     onBack: () -> Unit,
-    onOpenStudio: () -> Unit,
+    screens: PlayerScreens,
     viewModel: PlayerViewModel = hiltViewModel(),
 ) {
     // Remembered across the activity being rebuilt while the file picker is open.
@@ -149,7 +161,7 @@ fun NowPlayingScreen(
         }
         Unit
     }
-    val session = rememberSession(viewModel, onBack, pickFile, onOpenStudio)
+    val session = rememberSession(viewModel, onBack, pickFile, screens)
     if (session == null) {
         Column(Modifier.fillMaxSize().padding(24.dp)) {
             Text(stringResource(R.string.player_nothing))
@@ -161,6 +173,7 @@ fun NowPlayingScreen(
     LockOrientation(mode)
     val theme = LocalPlayerTheme.current
     val background by viewModel.background.collectAsStateWithLifecycle()
+    val arrangement by viewModel.arrangement.collectAsStateWithLifecycle()
     // Studio backgrounds are dark, so the player on top of them uses the dark colors.
     val dark = background?.enabled == true || LocalDarkTheme.current
     ApplyTheme(theme, dark) {
@@ -176,8 +189,19 @@ fun NowPlayingScreen(
         }
         Box(frame) {
             CompositionLocalProvider(LocalAudioFeed provides viewModel.audioFeed) {
-                if (landscape) theme.LandscapePlayer(session.ui, session.position, session.actions)
-                else theme.PortraitPlayer(session.ui, session.position, session.actions)
+                if (!landscape) {
+                    theme.PortraitPlayer(session.ui, session.position, session.actions)
+                } else {
+                    // Nothing is drawn until the stored arrangement of this theme is known.
+                    arrangement?.takeIf { it.theme == theme.id }?.let { saved ->
+                        val layout = saved.layout
+                        if (layout == null) {
+                            theme.LandscapePlayer(session.ui, session.position, session.actions)
+                        } else {
+                            CustomLandscape(layout, session.ui, session.position, session.actions)
+                        }
+                    }
+                }
             }
         }
     }
