@@ -226,7 +226,7 @@ private fun DrawScope.aurora(p: LayerPaint, m: BackgroundMotion, t: Float, path:
         path.moveTo(0f, edge(0))
         for (i in 1..steps) path.lineTo(size.width * i / steps, edge(i))
         for (i in steps downTo 0) {
-            path.lineTo(size.width * i / steps, edge(i) + height * (0.7f + 0.3f * sin(i * 0.5f + t * 0.5f + ribbon)))
+            path.lineTo(size.width * i / steps, edge(i) + height * (0.88f + 0.12f * sin(i * 0.22f + t * 0.5f + ribbon)))
         }
         path.close()
         val strength = (0.5f + 0.25f * sin(t * 0.3f + ribbon * 1.7f)) * p.intensity
@@ -377,7 +377,7 @@ private fun DrawScope.cinematic(p: LayerPaint, m: BackgroundMotion, t: Float, pa
         path.lineTo(end + spread, size.height)
         path.lineTo(end - spread, size.height)
         path.close()
-        val strength = (0.22f + 0.1f * m.bass + 0.12f * m.beat) * p.intensity
+        val strength = (0.42f + 0.12f * m.bass + 0.15f * m.beat) * p.intensity
         drawPath(
             path,
             Brush.verticalGradient(listOf(p.color(beam, strength * (0.6f + p.glow * 0.4f)), Color.Transparent)),
