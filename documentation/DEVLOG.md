@@ -93,3 +93,22 @@ Needs a real device: appearance of each style, smoothness, heat and battery use,
 of the player over bright covers, and reaction to music.
 
 Device check (reported by the owner, 2026-11-28): Phase 5 approved.
+
+## 2026-11-28 — Phase 6 (awaiting device check)
+- Landscape layout per theme: two or three columns, eight panels that can be shown, hidden,
+  dragged or moved from a menu, column widths, panel heights, switches for favorite, shuffle,
+  repeat and the moving background, named profiles, restore of the theme's design.
+- Equalizer: ten bands, nine presets, own presets, bass boost, stereo widening and an
+  only-with-headphones switch, built into the playback chain.
+- Database 5 adds saved layouts and equalizer presets; the upgrade keeps existing data.
+- Not included: free placement outside columns, a layout for portrait, per-song or per-device
+  equalizer settings, the device's own virtualizer effect.
+
+Verified on GitHub Actions: 71 unit/Robolectric tests, lintDebug, assembleDebug, and six
+emulator tests on API 28 and 34. The new ones edit a layout in both themes (menu and drag),
+save and restore it, rotate, and check on the real playback that cutting the bands lowers the
+measured level of the test tone and that switching off restores it.
+
+Needs a real device: how the presets sound, clicks while moving sliders, headphone and
+Bluetooth detection, comfort of dragging, and layouts on the owner's screen size.
+

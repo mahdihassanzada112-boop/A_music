@@ -175,15 +175,23 @@ private class Places {
 
     private fun LayoutCoordinates?.bounds() = this?.takeIf { it.isAttached }?.boundsInRoot()
 
-    fun drop(layout: LandscapeLayout, drag: Drag): LandscapeLayout {
+    /**
+     * What dropping here does, or null for nothing. The screen is read now; the returned
+     * change may run later and elsewhere.
+     */
+    fun drop(layout: LandscapeLayout, drag: Drag): ((LandscapeLayout) -> LandscapeLayout)? {
+        val panel = drag.panel
         val column = columnAt(drag.at, layout.columns.size)
-        if (column == null) return if (overTray(drag.at)) layout.hide(drag.panel) else layout
+        if (column == null) {
+            if (!overTray(drag.at)) return null
+            return { it.hide(panel) }
+        }
         // It lands below every card whose middle is above the finger.
         val index = layout.columns[column].panels.count { slot ->
             slot.panel != drag.panel &&
                 cards[slot.panel].bounds()?.let { it.center.y < drag.at.y } == true
         }
-        return layout.place(drag.panel, column, index)
+        return { it.place(panel, column, index) }
     }
 }
 
@@ -195,6 +203,7 @@ private fun Board(layout: LandscapeLayout, onChange: ((LandscapeLayout) -> Lands
     var origin by remember { mutableStateOf(Offset.Zero) }
     val places = remember { Places() }
     val change by rememberUpdatedState(onChange)
+    val shown by rememberUpdatedState(layout)
 
     @Composable
     fun card(panel: LandscapePanel, modifier: Modifier) {
@@ -219,7 +228,7 @@ private fun Board(layout: LandscapeLayout, onChange: ((LandscapeLayout) -> Lands
                             drag = drag?.let { it.copy(at = it.at + amount) }
                         },
                         onDragEnd = {
-                            drag?.let { dropped -> change { places.drop(it, dropped) } }
+                            drag?.let { dropped -> places.drop(shown, dropped)?.let { change(it) } }
                             drag = null
                         },
                         onDragCancel = { drag = null },

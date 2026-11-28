@@ -58,3 +58,27 @@ and background. To add a theme: new module, new `ThemeId`, one line in `app/Them
 - Blur is computed once per cover on a small copy, so it works the same from Android 8.
 - Saved presets are in the database (version 4). Changing background with the song happens
   in `MainViewModel`.
+
+## Landscape layouts
+- A `LandscapeLayout` (core/common) is two or three columns of panels, a width per column, a
+  height share per tall panel, and switches for favorite, shuffle, repeat and the moving
+  background. `LayoutCodec` stores it as one line and skips anything it does not know.
+- Each theme's current layout is a setting of its own; without one the theme draws its own
+  landscape player. Named layouts are in the database (version 5), also per theme.
+- `CustomLandscape` (core/theming) places the panels. A theme draws the artwork, song
+  information, progress bar and controls (`LandscapeBlock`) and the surface behind the shared
+  lyrics, queue, visualizer and equalizer panels (`LandscapePane`). The bar on top is fixed,
+  so the listener cannot remove the way back.
+- The editor (features/customize) changes the stored layout directly; dragging and the panel
+  menus use the same operations.
+
+## Equalizer
+- The app processes the audio itself (`EqualizerDsp`, core/common) instead of using the
+  device's audio effects, which differ between manufacturers and are sometimes missing.
+- `EqualizerProcessor` sits in the player's audio sink ahead of the visualizers' tap and works
+  on 16-bit audio; the sink is not asked for float output.
+- Ten peaking bands, a bass shelf and mid/side stereo widening. Boosts lower the overall
+  level by the same peak amount, and a soft knee catches the rest. Changes glide in.
+- Settings are in DataStore, named curves in the database. The playback service applies them
+  and watches for headphones; it cannot tell a Bluetooth speaker from Bluetooth headphones.
+
