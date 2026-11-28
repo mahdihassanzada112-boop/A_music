@@ -72,7 +72,7 @@ Bluetooth), battery use, importing real LRC files, Persian lyrics and keyboard e
 
 Device check (reported by the owner, 2026-11-27): Phase 4 approved.
 
-## 2026-11-28 — Phase 5 (built; device check pending)
+## 2026-11-28 — Phase 5 (complete)
 - Background Studio: fourteen styles as layers (up to six), each with switch, opacity,
   intensity, speed, colors and order; eleven shared settings; seven built-in and any number
   of saved presets; optional change with the next song; battery saver and frame-rate limit.
@@ -91,3 +91,5 @@ nothing to switch to.
 
 Needs a real device: appearance of each style, smoothness, heat and battery use, readability
 of the player over bright covers, and reaction to music.
+
+Device check (reported by the owner, 2026-11-28): Phase 5 approved.
